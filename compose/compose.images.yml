@@ -1,31 +1,44 @@
-name: frappe-app-images
-
-x-frappe-build-args: &frappe-build-args
-  PYTHON_VERSION: ${PYTHON_VERSION}
-  NODE_VERSION: ${NODE_VERSION}
-  DEBIAN_BASE: ${DEBIAN_BASE}
-  FRAPPE_PATH: ${FRAPPE_PATH}
-  FRAPPE_BRANCH: ${FRAPPE_BRANCH}
-  WKHTMLTOPDF_VERSION: ${WKHTMLTOPDF_VERSION}
-  WKHTMLTOPDF_DISTRO: ${WKHTMLTOPDF_DISTRO}
-  INSTALL_CHROMIUM: ${INSTALL_CHROMIUM}
-  CACHE_BUST: ${CACHE_BUST}
-
-x-frappe-build-common: &frappe-build-common
-  context: ../frappe_docker
-  dockerfile: images/custom/Containerfile
-  args:
-    <<: *frappe-build-args
 
 services:
-  build-image:
-    image: ${IMAGE_REPOSITORY}:${IMAGE_TAG}
+  office-image:
+    image: ${IMAGE_REPOSITORY:-flori}:${IMAGE_TAG:-office-wiki-v3.0.0-rc.4}
+    environment:
+      INSTALL_APP: wiki
+      CUSTOM_IMAGE: flori
+      CUSTOM_TAG: wiki-v3.0.0-rc.4
+      PULL_POLICY: missing
+      RESTART_POLICY: unless-stopped
     build:
-      <<: *frappe-build-common
+      context: ../frappe_docker
+      dockerfile: images/custom/Containerfile
+      args:
+        PYTHON_VERSION: ${PYTHON_VERSION:-3.14.5}
+        NODE_VERSION: ${NODE_VERSION:-24.16.0}
+        DEBIAN_BASE: ${DEBIAN_BASE:-bookworm}
+        FRAPPE_PATH: ${FRAPPE_PATH:-https://github.com/frappe/frappe}
+        FRAPPE_BRANCH: ${FRAPPE_BRANCH:-version-16}
+        WKHTMLTOPDF_VERSION: ${WKHTMLTOPDF_VERSION:-0.12.6.1-3}
+        WKHTMLTOPDF_DISTRO: ${WKHTMLTOPDF_DISTRO:-bookworm}
+        INSTALL_CHROMIUM: ${INSTALL_CHROMIUM:-false}
+        CACHE_BUST: ${CACHE_BUST:-wiki-v3.0.0-rc.4-20260613}
       secrets:
         - source: apps_json
           target: apps_json
 
+  runtime-image:
+    image: ${IMAGE_REPOSITORY:-flori}:${IMAGE_TAG:-wiki-v3.0.0-rc.4}
+    build:
+      context: ../docker
+      dockerfile: Dockerfile
+      args:
+        BASE_IMAGE: ${IMAGE_REPOSITORY:-flori}:${BASE_IMAGE_TAG:-office-wiki-v3.0.0-rc.4}
+        INSTALL_APP: ${INSTALL_APP:-wiki}
+        CUSTOM_IMAGE: ${CUSTOM_IMAGE:-flori}
+        CUSTOM_TAG: ${CUSTOM_TAG:-wiki-v3.0.0-rc.4}
+        PULL_POLICY: ${PULL_POLICY:-missing}
+        RESTART_POLICY: ${RESTART_POLICY:-unless-stopped}
+    depends_on:
+      - office-image
 secrets:
   apps_json:
-    file: ${APPS_JSON_FILE}
+    file: ${APPS_JSON_FILE:-../config/wiki-v3.0.0-rc.4.json}

@@ -1,0 +1,31 @@
+name: flori-{{ bench_name }}
+
+services:
+  frontend:
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=flori-public
+
+{% if domains_rule %}
+      - traefik.http.routers.{{ router_name }}-web.rule={{ domains_rule }}
+      - traefik.http.routers.{{ router_name }}-web.entrypoints=web
+      - traefik.http.routers.{{ router_name }}-web.middlewares={{ router_name }}-redirect
+
+      - traefik.http.middlewares.{{ router_name }}-redirect.redirectscheme.scheme=https
+
+      - traefik.http.routers.{{ router_name }}-ssl.rule={{ domains_rule }}
+      - traefik.http.routers.{{ router_name }}-ssl.entrypoints=websecure
+      - traefik.http.routers.{{ router_name }}-ssl.tls=true
+      - traefik.http.routers.{{ router_name }}-ssl.tls.certresolver=le
+      - traefik.http.routers.{{ router_name }}-ssl.service={{ router_name }}
+{% endif %}
+
+      - traefik.http.services.{{ router_name }}.loadbalancer.server.port=8080
+
+    networks:
+      - default
+      - flori-public
+
+networks:
+  flori-public:
+    external: true

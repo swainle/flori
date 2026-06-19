@@ -1,5 +1,5 @@
 [project]
-name = "flori-cli"
+name = "flori"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
@@ -9,10 +9,13 @@ authors = [
 requires-python = ">=3.12"
 dependencies = [
     "click>=8.4.1",
+    "dotenv>=0.9.9",
+    "jinja2>=3.1.6",
+    "python-dotenv>=1.2.2",
 ]
 
 [project.scripts]
-fi = "flori_cli.cli:cli"
+fi = "flori.cli:cli"
 
 [build-system]
 requires = ["uv_build>=0.9.30,<0.10.0"]
