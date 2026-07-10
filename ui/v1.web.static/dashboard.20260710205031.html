@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>数据大屏</title>
+  <style>
+    :root {
+      --primary: #1a73e8;
+      --primary-deep: #005bbf;
+      --primary-soft: #d8e7ff;
+      --primary-pale: #eef5ff;
+      --surface: #ffffff;
+      --surface-soft: #f8fafc;
+      --surface-blue: #f3f8ff;
+      --page-bg: #f4f8fd;
+      --text: #18202b;
+      --muted: #4c5b70;
+      --subtle: #78869a;
+      --border: #cbd8ea;
+      --success: #07883f;
+      --success-soft: #dcf7e6;
+      --danger: #ba1a1a;
+      --danger-soft: #ffdad6;
+      --shadow-xs: 0 10px 24px rgba(24, 40, 72, 0.08);
+      --shadow-sm: 0 18px 42px rgba(24, 40, 72, 0.12);
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 18px;
+      --radius-full: 999px;
+      --space-xs: 4px;
+      --space-sm: 12px;
+      --space-md: 16px;
+      --space-lg: 24px;
+      --bottom-nav-height: 80px;
+      font-family: Inter, "Segoe UI", "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      min-height: 100%;
+      overflow-x: hidden;
+    }
+
+    body {
+      min-height: 100vh;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 90% 0%, rgba(26, 115, 232, 0.12), transparent 30%),
+        linear-gradient(180deg, #fbfdff 0%, var(--page-bg) 100%);
+      font-size: 14px;
+      line-height: 1.45;
+      padding-bottom: calc(var(--bottom-nav-height) + 18px);
+    }
+
+    button,
+    a {
+      font: inherit;
+    }
+
+    button {
+      border: 0;
+      cursor: pointer;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .top-app-bar {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      width: 100%;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 var(--space-md);
+      border-bottom: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.88);
+      backdrop-filter: blur(16px);
+    }
+
+    .brand-area,
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      min-width: 0;
+    }
+
+    .avatar {
+      width: 40px;
+      height: 40px;
+      flex: 0 0 auto;
+      border-radius: 50%;
+      overflow: hidden;
+      background: var(--primary-soft);
+      box-shadow: inset 0 0 0 1px rgba(26, 115, 232, 0.1);
+      object-fit: cover;
+    }
+
+    .page-title {
+      margin: 0;
+      color: var(--primary-deep);
+      font-size: 20px;
+      line-height: 28px;
+      font-weight: 600;
+      letter-spacing: 0;
+      white-space: nowrap;
+    }
+
+    .icon-button {
+      width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      border-radius: var(--radius-full);
+      color: var(--primary);
+      background: transparent;
+      transition: background 160ms ease, transform 160ms ease;
+    }
+
+    .icon-button:hover {
+      background: var(--primary-pale);
+      transform: translateY(-1px);
+    }
+
+    .page-shell {
+      width: min(100%, 1440px);
+      margin: 0 auto;
+      padding: var(--space-md);
+      display: grid;
+      gap: var(--space-lg);
+    }
+
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--space-md);
+    }
+
+    .card {
+      min-width: 0;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      background: rgba(255, 255, 255, 0.94);
+      box-shadow: var(--shadow-xs);
+    }
+
+    .metric-card {
+      min-height: 148px;
+      padding: var(--space-md);
+      display: grid;
+      align-content: space-between;
+      overflow: hidden;
+    }
+
+    .metric-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: flex-start;
+    }
+
+    .metric-label {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 16px;
+      font-weight: 600;
+    }
+
+    .trend-label {
+      font-size: 12px;
+      line-height: 16px;
+      font-weight: 400;
+      white-space: nowrap;
+    }
+
+    .trend-label.up {
+      color: var(--success);
+    }
+
+    .trend-label.down {
+      color: var(--danger);
+    }
+
+    .status-label {
+      font-size: 12px;
+      line-height: 16px;
+      font-weight: 400;
+      white-space: nowrap;
+    }
+
+    .status-label {
+      color: var(--success);
+    }
+
+    .metric-value {
+      margin-top: 8px;
+      color: #10294a;
+      font-size: clamp(23px, 6vw, 28px);
+      line-height: 1;
+      font-weight: 400;
+    }
+
+    .sparkline {
+      width: 72%;
+      height: 24px;
+      margin-top: 8px;
+    }
+
+    .content-grid {
+      display: grid;
+      gap: calc(var(--bottom-nav-height) + 18px);
+    }
+
+    .section-card {
+      padding: 20px;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: var(--space-md);
+    }
+
+    .section-title {
+      margin: 0;
+      color: #10294a;
+      font-size: 20px;
+      line-height: 28px;
+      font-weight: 700;
+      letter-spacing: 0;
+    }
+
+    .section-subtitle {
+      margin-top: 2px;
+      color: var(--subtle);
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .range-button,
+    .link-button {
+      color: var(--primary);
+      font-weight: 700;
+      transition: background 160ms ease, transform 160ms ease;
+    }
+
+    .range-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      min-height: 38px;
+      padding: 0 13px;
+      border-radius: var(--radius-full);
+      background: var(--primary-pale);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .range-button:hover,
+    .link-button:hover {
+      transform: translateY(-1px);
+    }
+
+    .chart-wrap {
+      height: 226px;
+      position: relative;
+      padding-bottom: 28px;
+    }
+
+    .axis {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      display: flex;
+      justify-content: space-between;
+      color: var(--subtle);
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .alert-card {
+      padding: 0;
+      overflow: hidden;
+      margin-bottom: 10px;
+    }
+
+    .alert-card .section-header {
+      margin: 0;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      align-items: center;
+    }
+
+    .link-button {
+      background: transparent;
+      font-size: 12px;
+    }
+
+    .alert-list {
+      display: grid;
+    }
+
+    .alert-item {
+      display: grid;
+      grid-template-columns: 42px minmax(0, 1fr);
+      gap: 14px;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      transition: background 160ms ease;
+    }
+
+    .alert-item:last-child {
+      border-bottom: 0;
+    }
+
+    .alert-item:hover {
+      background: var(--surface-blue);
+    }
+
+    .alert-icon {
+      width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+    }
+
+    .alert-icon.error {
+      color: var(--danger);
+      background: var(--danger-soft);
+    }
+
+    .alert-icon.info {
+      color: var(--primary);
+      background: var(--primary-pale);
+    }
+
+    .alert-icon.success {
+      color: var(--success);
+      background: var(--success-soft);
+    }
+
+    .alert-main {
+      min-width: 0;
+    }
+
+    .alert-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .alert-title {
+      margin: 0;
+      color: #17243a;
+      font-size: 14px;
+      line-height: 20px;
+      font-weight: 700;
+    }
+
+    .alert-time {
+      color: var(--subtle);
+      font-size: 12px;
+      line-height: 16px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .alert-desc {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 20px;
+    }
+
+    .bottom-nav {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 40;
+      height: var(--bottom-nav-height);
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      align-items: center;
+      gap: 4px;
+      padding: 8px 16px 10px;
+      border-top: 1px solid var(--border);
+      border-radius: 18px 18px 0 0;
+      background: rgba(255, 255, 255, 0.94);
+      box-shadow: 0 -12px 30px rgba(24, 40, 72, 0.12);
+      backdrop-filter: blur(18px);
+    }
+
+    .bottom-nav a {
+      min-width: 0;
+      min-height: 54px;
+      display: grid;
+      place-items: center;
+      gap: 3px;
+      border-radius: var(--radius-full);
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 16px;
+      font-weight: 700;
+      transition: background 160ms ease, color 160ms ease, transform 160ms ease;
+    }
+
+    .bottom-nav a.active {
+      color: #ffffff;
+      background: var(--primary);
+    }
+
+    .bottom-nav a:hover {
+      transform: translateY(-1px);
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: calc(var(--bottom-nav-height) + 14px);
+      z-index: 60;
+      transform: translate(-50%, 14px);
+      opacity: 0;
+      pointer-events: none;
+      padding: 10px 14px;
+      border-radius: var(--radius-full);
+      color: #ffffff;
+      background: #17243a;
+      box-shadow: var(--shadow-sm);
+      font-size: 13px;
+      font-weight: 700;
+      transition: opacity 160ms ease, transform 160ms ease;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+
+    .icon {
+      width: 20px;
+      height: 20px;
+      flex: 0 0 auto;
+    }
+
+    @media (min-width: 768px) {
+      body {
+        padding-bottom: 28px;
+      }
+
+      .page-shell {
+        padding: var(--space-lg);
+      }
+
+      .metric-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+
+      .content-grid {
+        grid-template-columns: minmax(0, 1.55fr) minmax(330px, 0.8fr);
+        gap: var(--space-lg);
+        align-items: start;
+      }
+
+      .section-card {
+        min-height: 360px;
+        padding: var(--space-lg);
+      }
+
+      .chart-wrap {
+        height: 286px;
+      }
+
+      .bottom-nav {
+        display: none;
+      }
+
+      .toast {
+        bottom: var(--space-lg);
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .top-app-bar {
+        padding: 0 28px;
+      }
+
+      .page-shell {
+        padding: 28px;
+      }
+
+      .metric-card {
+        min-height: 166px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="top-app-bar" data-uisl="topAppBarDashboard">
+    <div class="brand-area">
+      <img
+        class="avatar"
+        data-uisl='topAppBarDashboard.children["avatarUser"]'
+        alt="专业商务头像"
+        src='data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96"%3E%3Cdefs%3E%3ClinearGradient id="bg" x1="12" x2="84" y1="8" y2="88" gradientUnits="userSpaceOnUse"%3E%3Cstop stop-color="%23eaf2ff"/%3E%3Cstop offset="1" stop-color="%23bfd8ff"/%3E%3C/linearGradient%3E%3ClinearGradient id="jacket" x1="22" x2="74" y1="56" y2="96" gradientUnits="userSpaceOnUse"%3E%3Cstop stop-color="%23005bbf"/%3E%3Cstop offset="1" stop-color="%231a73e8"/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width="96" height="96" rx="48" fill="url(%23bg)"/%3E%3Ccircle cx="48" cy="36" r="17" fill="%23f2c5a8"/%3E%3Cpath d="M30 91c3-20 10-31 18-31s16 11 18 31H30Z" fill="%23fff"/%3E%3Cpath d="M15 96c5-23 18-35 33-35s28 12 33 35H15Z" fill="url(%23jacket)"/%3E%3Cpath d="M31 25c7-12 27-13 34 1 3 7 1 14-2 18-4-7-9-10-16-10s-12 3-16 9c-3-5-3-12 0-18Z" fill="%2317202b"/%3E%3Ccircle cx="41" cy="39" r="2" fill="%2317202b"/%3E%3Ccircle cx="55" cy="39" r="2" fill="%2317202b"/%3E%3Cpath d="M42 49c4 3 8 3 12 0" stroke="%23835f45" stroke-width="2" stroke-linecap="round" fill="none"/%3E%3C/svg%3E'
+      />
+      <h1 class="page-title">数据大屏</h1>
+    </div>
+    <div class="top-actions">
+      <button class="icon-button" type="button" data-toast="通知中心" aria-label="通知">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 22a2.2 2.2 0 0 0 2.1-1.5H9.9A2.2 2.2 0 0 0 12 22Zm6.8-5.3-1.6-1.9V10a5.2 5.2 0 0 0-4-5.1v-1a1.2 1.2 0 1 0-2.4 0v1a5.2 5.2 0 0 0-4 5.1v4.8l-1.6 1.9V18h13.6v-1.3Z" fill="currentColor"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <main class="page-shell">
+    <section class="metric-grid" data-uisl="metricGridDashboard" aria-label="关键指标">
+      <article class="card metric-card" data-uisl='metricGridDashboard.children["metricRevenue"]'>
+        <div>
+          <div class="metric-head">
+            <span class="metric-label">今日营收</span>
+            <span class="trend-label up">+12% ↑</span>
+          </div>
+          <div class="metric-value">¥42,850</div>
+        </div>
+        <svg class="sparkline" viewBox="0 0 100 30" preserveAspectRatio="none" aria-hidden="true">
+          <path d="M0,25 Q15,5 30,20 T60,10 T90,25 T100,15" fill="none" stroke="#1a73e8" stroke-width="2.4" stroke-linecap="round"/>
+        </svg>
+      </article>
+
+      <article class="card metric-card" data-uisl='metricGridDashboard.children["metricActiveUsers"]'>
+        <div>
+          <div class="metric-head">
+            <span class="metric-label">活跃用户</span>
+            <span class="trend-label up">+8% ↑</span>
+          </div>
+          <div class="metric-value">1,284</div>
+        </div>
+        <svg class="sparkline" viewBox="0 0 100 30" preserveAspectRatio="none" aria-hidden="true">
+          <path d="M0,15 Q20,25 40,15 T70,20 T100,5" fill="none" stroke="#1a73e8" stroke-width="2.4" stroke-linecap="round"/>
+        </svg>
+      </article>
+
+      <article class="card metric-card" data-uisl='metricGridDashboard.children["metricConversionRate"]'>
+        <div>
+          <div class="metric-head">
+            <span class="metric-label">转化率</span>
+            <span class="trend-label down">-2% ↓</span>
+          </div>
+          <div class="metric-value">3.42%</div>
+        </div>
+        <svg class="sparkline" viewBox="0 0 100 30" preserveAspectRatio="none" aria-hidden="true">
+          <path d="M0,5 Q20,10 40,25 T70,15 T100,20" fill="none" stroke="#ba1a1a" stroke-width="2.4" stroke-linecap="round"/>
+        </svg>
+      </article>
+
+      <article class="card metric-card" data-uisl='metricGridDashboard.children["metricTodo"]'>
+        <div>
+          <div class="metric-head">
+            <span class="metric-label">待办事项</span>
+            <span class="status-label">进行中</span>
+          </div>
+          <div class="metric-value">12</div>
+        </div>
+        <svg class="sparkline" viewBox="0 0 100 30" preserveAspectRatio="none" aria-hidden="true">
+          <path d="M0,20 L20,15 L40,22 L60,10 L80,18 L100,5" fill="none" stroke="#1a73e8" stroke-width="2.4" stroke-linecap="round"/>
+        </svg>
+      </article>
+    </section>
+
+    <div class="content-grid" data-uisl="contentGridDashboard">
+      <section class="card section-card" data-uisl="chartBusinessGrowth" aria-label="业务增长趋势">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">业务增长趋势</h2>
+            <div class="section-subtitle">最近7天</div>
+          </div>
+          <button class="range-button" type="button" data-toast="切换时间范围">
+            最近7天
+            <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m7 9 5 5 5-5H7Z" fill="currentColor"/></svg>
+          </button>
+        </div>
+        <div class="chart-wrap">
+          <svg width="100%" height="100%" viewBox="0 0 400 150" preserveAspectRatio="none" role="img" aria-label="业务增长趋势折线面积图">
+            <defs>
+              <linearGradient id="blueGradient20260710205031" x1="0" x2="0" y1="0" y2="1">
+                <stop offset="0%" stop-color="#1a73e8" stop-opacity="0.34"/>
+                <stop offset="100%" stop-color="#1a73e8" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <g stroke="#e4ebf5" stroke-width="1">
+              <line x1="0" x2="400" y1="0" y2="0"/>
+              <line x1="0" x2="400" y1="50" y2="50"/>
+              <line x1="0" x2="400" y1="100" y2="100"/>
+              <line x1="0" x2="400" y1="150" y2="150"/>
+            </g>
+            <path d="M0,130 C50,110 100,140 150,90 C200,40 250,70 300,50 C350,30 400,10 400,10 L400,150 L0,150 Z" fill="url(#blueGradient20260710205031)"/>
+            <path d="M0,130 C50,110 100,140 150,90 C200,40 250,70 300,50 C350,30 400,10 400,10" fill="none" stroke="#1a73e8" stroke-linecap="round" stroke-width="3"/>
+            <circle cx="150" cy="90" fill="#1a73e8" r="4" stroke="#fff" stroke-width="2"/>
+            <circle cx="400" cy="10" fill="#1a73e8" r="4" stroke="#fff" stroke-width="2"/>
+          </svg>
+          <div class="axis" aria-hidden="true">
+            <span>周一</span><span>周二</span><span>周三</span><span>周四</span><span>周五</span><span>周六</span><span>周日</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="card alert-card" data-uisl="alertListRealtime" aria-label="实时预警">
+        <div class="section-header">
+          <h2 class="section-title">实时预警</h2>
+          <button class="link-button" type="button" data-toast="查看全部预警">查看全部</button>
+        </div>
+        <div class="alert-list">
+          <article class="alert-item" data-toast="库存预警: 核心组件" data-uisl='alertListRealtime.children["alertStock"]'>
+            <div class="alert-icon error">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3 2.5 20.5h19L12 3Zm1 13h-2v2h2v-2Zm0-7h-2v5h2V9Z" fill="currentColor"/></svg>
+            </div>
+            <div class="alert-main">
+              <div class="alert-row">
+                <h3 class="alert-title">库存预警: 核心组件</h3>
+                <time class="alert-time">10:24</time>
+              </div>
+              <p class="alert-desc">SKU-2930 当前库存低于安全水平 (15/100)。</p>
+            </div>
+          </article>
+
+          <article class="alert-item" data-toast="新订单已生成" data-uisl='alertListRealtime.children["alertOrder"]'>
+            <div class="alert-icon info">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M11 17h2v-6h-2v6Zm0-8h2V7h-2v2Zm1 13a10 10 0 1 1 0-20 10 10 0 0 1 0 20Z" fill="currentColor"/></svg>
+            </div>
+            <div class="alert-main">
+              <div class="alert-row">
+                <h3 class="alert-title">新订单已生成</h3>
+                <time class="alert-time">09:15</time>
+              </div>
+              <p class="alert-desc">来自华东区的批量采购订单已进入待审核队列。</p>
+            </div>
+          </article>
+
+          <article class="alert-item" data-toast="同步任务完成" data-uisl='alertListRealtime.children["alertSync"]'>
+            <div class="alert-icon success">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m10.2 15.2 6.9-6.9 1.4 1.4-8.3 8.3-4.7-4.7 1.4-1.4 3.3 3.3ZM12 22a10 10 0 1 1 0-20 10 10 0 0 1 0 20Z" fill="currentColor"/></svg>
+            </div>
+            <div class="alert-main">
+              <div class="alert-row">
+                <h3 class="alert-title">同步任务完成</h3>
+                <time class="alert-time">08:00</time>
+              </div>
+              <p class="alert-desc">昨日财务数据已全量同步至管理后台。</p>
+            </div>
+          </article>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <nav class="bottom-nav" data-uisl="bottomNavDashboard" aria-label="底部导航">
+    <a class="active" href="#overview" data-nav="Overview" data-uisl='bottomNavDashboard.children["navOverview"]'>
+      <svg class="icon" viewBox="0 0 24 24" fill="none"><path d="M5 13h6V5H5v8Zm0 6h6v-4H5v4Zm8 0h6v-7h-6v7Zm0-14v5h6V5h-6Z" fill="currentColor"/></svg>
+      Overview
+    </a>
+    <a href="#analytics" data-nav="Analytics" data-uisl='bottomNavDashboard.children["navAnalytics"]'>
+      <svg class="icon" viewBox="0 0 24 24" fill="none"><path d="m4 17 5-5 4 3.5L20 7l-1.5-1.3-5.7 6.8-4-3.5L2.7 15.7 4 17Z" fill="currentColor"/></svg>
+      Analytics
+    </a>
+    <a href="#reports" data-nav="Reports" data-uisl='bottomNavDashboard.children["navReports"]'>
+      <svg class="icon" viewBox="0 0 24 24" fill="none"><path d="M6 3h9l4 4v14H6V3Zm8 1.7V8h3.3L14 4.7ZM8.5 12h7v-1.6h-7V12Zm0 4h7v-1.6h-7V16Z" fill="currentColor"/></svg>
+      Reports
+    </a>
+    <a href="#settings" data-nav="Settings" data-uisl='bottomNavDashboard.children["navSettings"]'>
+      <svg class="icon" viewBox="0 0 24 24" fill="none"><path d="M10.8 3h2.4l.5 2.1c.6.2 1.1.4 1.6.7l1.9-1.1 1.7 1.7-1.1 1.9c.3.5.6 1 .7 1.6l2.1.5v2.4l-2.1.5c-.2.6-.4 1.1-.7 1.6l1.1 1.9-1.7 1.7-1.9-1.1c-.5.3-1 .6-1.6.7l-.5 2.1h-2.4l-.5-2.1c-.6-.2-1.1-.4-1.6-.7l-1.9 1.1-1.7-1.7 1.1-1.9c-.3-.5-.6-1-.7-1.6L3 13.2v-2.4l2.1-.5c.2-.6.4-1.1.7-1.6L4.7 6.8l1.7-1.7 1.9 1.1c.5-.3 1-.6 1.6-.7l.5-2.1Zm1.2 6.1a2.9 2.9 0 1 0 0 5.8 2.9 2.9 0 0 0 0-5.8Z" fill="currentColor"/></svg>
+      Settings
+    </a>
+  </nav>
+
+  <div class="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    const toast = document.querySelector(".toast");
+    let toastTimer;
+
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.add("show");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove("show"), 1400);
+    }
+
+    document.querySelectorAll("[data-toast]").forEach((node) => {
+      node.addEventListener("click", () => showToast(node.dataset.toast));
+    });
+
+    document.querySelectorAll("[data-nav]").forEach((node) => {
+      node.addEventListener("click", (event) => {
+        const name = node.dataset.nav;
+        document.querySelectorAll("[data-nav]").forEach((item) => {
+          item.classList.toggle("active", item.dataset.nav === name);
+        });
+        showToast(`${name} 已选中`);
+        if (node.getAttribute("href") !== "#overview") {
+          event.preventDefault();
+        }
+      });
+    });
+  </script>
+</body>
+</html>

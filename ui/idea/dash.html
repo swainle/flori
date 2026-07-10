@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+
+<html class="light" lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "inverse-on-surface": "#f0f1f2",
+                        "on-tertiary-fixed": "#002108",
+                        "background": "#f8f9fa",
+                        "secondary-fixed": "#dbe3f1",
+                        "on-background": "#191c1d",
+                        "surface-tint": "#005bc0",
+                        "primary-fixed": "#d8e2ff",
+                        "on-error-container": "#93000a",
+                        "outline-variant": "#c1c6d6",
+                        "inverse-surface": "#2e3132",
+                        "error-container": "#ffdad6",
+                        "primary": "#005bbf",
+                        "on-secondary-container": "#5d6571",
+                        "tertiary-fixed": "#89fa9b",
+                        "primary-fixed-dim": "#adc7ff",
+                        "error": "#ba1a1a",
+                        "surface-dim": "#d9dadb",
+                        "tertiary": "#006d2c",
+                        "on-primary": "#ffffff",
+                        "on-surface-variant": "#414754",
+                        "tertiary-container": "#008939",
+                        "secondary-container": "#dbe3f1",
+                        "on-tertiary-container": "#ffffff",
+                        "on-primary-fixed-variant": "#004493",
+                        "on-secondary-fixed": "#141c26",
+                        "outline": "#727785",
+                        "surface": "#f8f9fa",
+                        "on-secondary-fixed-variant": "#3f4752",
+                        "surface-container": "#edeeef",
+                        "on-error": "#ffffff",
+                        "on-surface": "#191c1d",
+                        "surface-bright": "#f8f9fa",
+                        "surface-container-low": "#f3f4f5",
+                        "inverse-primary": "#adc7ff",
+                        "surface-container-highest": "#e1e3e4",
+                        "on-primary-container": "#ffffff",
+                        "on-tertiary-fixed-variant": "#005320",
+                        "on-secondary": "#ffffff",
+                        "secondary-fixed-dim": "#bfc7d4",
+                        "surface-container-lowest": "#ffffff",
+                        "primary-container": "#1a73e8",
+                        "on-tertiary": "#ffffff",
+                        "tertiary-fixed-dim": "#6ddd81",
+                        "surface-variant": "#e1e3e4",
+                        "secondary": "#575f6b",
+                        "surface-container-high": "#e7e8e9",
+                        "on-primary-fixed": "#001a41"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "xl": "32px",
+                        "container-max": "1440px",
+                        "base": "8px",
+                        "md": "16px",
+                        "gutter": "24px",
+                        "xs": "4px",
+                        "lg": "24px",
+                        "sm": "12px"
+                    },
+                    "fontFamily": {
+                        "display-lg": ["Inter"],
+                        "data-mono": ["JetBrains Mono"],
+                        "headline-md-mobile": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "headline-sm": ["Inter"],
+                        "body-md": ["Inter"],
+                        "label-md": ["Inter"],
+                        "headline-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "display-lg": ["36px", {"lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "data-mono": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "headline-md-mobile": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        .sparkline-svg {
+            stroke: #1a73e8;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+        }
+
+        .chart-gradient-fill {
+            fill: url(#blueGradient);
+            fill-opacity: 0.15;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md text-body-md antialiased min-h-screen pb-24">
+<!-- TopAppBar -->
+<header class="w-full sticky top-0 bg-surface border-b border-outline-variant z-40 flex items-center justify-between px-md h-16">
+<div class="flex items-center gap-md">
+<div class="w-10 h-10 rounded-full overflow-hidden bg-secondary-container flex items-center justify-center">
+<img class="w-full h-full object-cover" data-alt="A professional business headshot of a corporate executive in a modern bright office environment. The person is smiling warmly, wearing a clean white shirt and deep blue jacket. The lighting is soft and flattering with high-key characteristics, emphasizing a transparent and authoritative professional brand identity." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA9qNAgKItzCLwjqJlMC5K7UJ0qLMC5wxPpClvQRwIAScFoegSisvlFLR4_NDi7h1Vn0VarIyxvKHCwWFBTnKBc1JlE5LiBdtNWBKB8Lgt00r5w4CFgfOy7Z9tOlrnXr1TOIKkwffpZfk2usXnTzCKJ361VWg7GAFEzIfzzhCho01HzMvytB9lKh5Zf5OcptV-V0gM8gTZmEeer0oshiTiv0l3-5e0cSY99e8gBU34N4ym3_uJadTp5YA"/>
+</div>
+<h1 class="font-headline-md-mobile text-headline-md-mobile font-semibold text-primary">数据大屏</h1>
+</div>
+<div class="flex items-center gap-sm">
+<button class="p-2 rounded-full hover:bg-secondary-container transition-colors active:opacity-80">
+<span class="material-symbols-outlined text-primary">notifications</span>
+</button>
+</div>
+</header>
+<main class="px-md pt-md space-y-lg">
+<!-- Key Metrics Grid -->
+<section class="grid grid-cols-2 gap-md">
+<!-- Metric Card 1 -->
+<div class="bg-surface border border-outline-variant rounded-xl p-md shadow-sm">
+<div class="flex justify-between items-start mb-xs">
+<span class="text-on-surface-variant font-label-md text-label-md">今日营收</span>
+<span class="text-tertiary flex items-center font-label-md text-label-md">
+                        +12% <span class="material-symbols-outlined text-[14px]">trending_up</span>
+</span>
+</div>
+<div class="font-headline-sm text-headline-sm text-on-surface">¥42,850</div>
+<div class="h-8 mt-sm w-full">
+<svg class="w-full h-full overflow-visible" viewbox="0 0 100 30">
+<path class="sparkline-svg" d="M0,25 Q15,5 30,20 T60,10 T90,25 T100,15"></path>
+</svg>
+</div>
+</div>
+<!-- Metric Card 2 -->
+<div class="bg-surface border border-outline-variant rounded-xl p-md shadow-sm">
+<div class="flex justify-between items-start mb-xs">
+<span class="text-on-surface-variant font-label-md text-label-md">活跃用户</span>
+<span class="text-tertiary flex items-center font-label-md text-label-md">
+                        +8% <span class="material-symbols-outlined text-[14px]">trending_up</span>
+</span>
+</div>
+<div class="font-headline-sm text-headline-sm text-on-surface">1,284</div>
+<div class="h-8 mt-sm w-full">
+<svg class="w-full h-full overflow-visible" viewbox="0 0 100 30">
+<path class="sparkline-svg" d="M0,15 Q20,25 40,15 T70,20 T100,5"></path>
+</svg>
+</div>
+</div>
+<!-- Metric Card 3 -->
+<div class="bg-surface border border-outline-variant rounded-xl p-md shadow-sm">
+<div class="flex justify-between items-start mb-xs">
+<span class="text-on-surface-variant font-label-md text-label-md">转化率</span>
+<span class="text-error flex items-center font-label-md text-label-md">
+                        -2% <span class="material-symbols-outlined text-[14px]">trending_down</span>
+</span>
+</div>
+<div class="font-headline-sm text-headline-sm text-on-surface">3.42%</div>
+<div class="h-8 mt-sm w-full">
+<svg class="w-full h-full overflow-visible" viewbox="0 0 100 30">
+<path class="sparkline-svg" d="M0,5 Q20,10 40,25 T70,15 T100,20" style="stroke: #ba1a1a;"></path>
+</svg>
+</div>
+</div>
+<!-- Metric Card 4 -->
+<div class="bg-surface border border-outline-variant rounded-xl p-md shadow-sm">
+<div class="flex justify-between items-start mb-xs">
+<span class="text-on-surface-variant font-label-md text-label-md">待办事项</span>
+<span class="text-primary-container bg-primary-fixed px-1.5 rounded-full font-label-md text-label-md">进行中</span>
+</div>
+<div class="font-headline-sm text-headline-sm text-on-surface">12</div>
+<div class="h-8 mt-sm w-full">
+<svg class="w-full h-full overflow-visible" viewbox="0 0 100 30">
+<path class="sparkline-svg" d="M0,20 L20,15 L40,22 L60,10 L80,18 L100,5"></path>
+</svg>
+</div>
+</div>
+</section>
+<!-- Business Growth Trend Chart -->
+<section class="bg-surface border border-outline-variant rounded-xl p-lg shadow-sm">
+<div class="flex items-center justify-between mb-lg">
+<h2 class="font-headline-sm text-headline-sm text-on-surface">业务增长趋势</h2>
+<div class="flex gap-xs items-center text-on-surface-variant font-label-md text-label-md">
+<span>最近7天</span>
+<span class="material-symbols-outlined text-[16px]">expand_more</span>
+</div>
+</div>
+<div class="h-48 w-full relative">
+<svg class="w-full h-full" preserveaspectratio="none" viewbox="0 0 400 150">
+<defs>
+<lineargradient id="blueGradient" x1="0%" x2="0%" y1="0%" y2="100%">
+<stop offset="0%" style="stop-color:#1a73e8;stop-opacity:0.4"></stop>
+<stop offset="100%" style="stop-color:#1a73e8;stop-opacity:0"></stop>
+</lineargradient>
+</defs>
+<!-- Grid Lines -->
+<line stroke="#f0f1f2" stroke-width="1" x1="0" x2="400" y1="0" y2="0"></line>
+<line stroke="#f0f1f2" stroke-width="1" x1="0" x2="400" y1="50" y2="50"></line>
+<line stroke="#f0f1f2" stroke-width="1" x1="0" x2="400" y1="100" y2="100"></line>
+<line stroke="#f0f1f2" stroke-width="1" x1="0" x2="400" y1="150" y2="150"></line>
+<!-- Area Fill -->
+<path class="chart-gradient-fill" d="M0,130 C50,110 100,140 150,90 C200,40 250,70 300,50 C350,30 400,10 400,10 L400,150 L0,150 Z"></path>
+<!-- Line -->
+<path d="M0,130 C50,110 100,140 150,90 C200,40 250,70 300,50 C350,30 400,10" fill="none" stroke="#1a73e8" stroke-linecap="round" stroke-width="3"></path>
+<!-- Points -->
+<circle cx="150" cy="90" fill="#1a73e8" r="4" stroke="white" stroke-width="2"></circle>
+<circle cx="400" cy="10" fill="#1a73e8" r="4" stroke="white" stroke-width="2"></circle>
+</svg>
+<div class="absolute -bottom-6 w-full flex justify-between text-on-surface-variant font-label-md text-label-md px-1">
+<span>周一</span><span>周二</span><span>周三</span><span>周四</span><span>周五</span><span>周六</span><span>周日</span>
+</div>
+</div>
+</section>
+<!-- Real-time Alerts / Recent Activities -->
+<section class="bg-surface border border-outline-variant rounded-xl shadow-sm overflow-hidden mb-8">
+<div class="px-lg py-md border-b border-outline-variant flex items-center justify-between">
+<h2 class="font-headline-sm text-headline-sm text-on-surface">实时预警</h2>
+<button class="text-primary font-label-md text-label-md">查看全部</button>
+</div>
+<div class="divide-y divide-outline-variant">
+<div class="px-lg py-md flex items-center gap-md hover:bg-secondary-container transition-colors cursor-pointer">
+<div class="w-10 h-10 rounded-full bg-error-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-error">warning</span>
+</div>
+<div class="flex-grow">
+<div class="flex justify-between items-start">
+<h3 class="font-body-md text-body-md font-semibold text-on-surface">库存预警: 核心组件</h3>
+<span class="text-on-surface-variant font-label-md text-label-md">10:24</span>
+</div>
+<p class="text-on-surface-variant text-body-md">SKU-2930 当前库存低于安全水平 (15/100)。</p>
+</div>
+</div>
+<div class="px-lg py-md flex items-center gap-md hover:bg-secondary-container transition-colors cursor-pointer">
+<div class="w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary">info</span>
+</div>
+<div class="flex-grow">
+<div class="flex justify-between items-start">
+<h3 class="font-body-md text-body-md font-semibold text-on-surface">新订单已生成</h3>
+<span class="text-on-surface-variant font-label-md text-label-md">09:15</span>
+</div>
+<p class="text-on-surface-variant text-body-md">来自华东区的批量采购订单已进入待审核队列。</p>
+</div>
+</div>
+<div class="px-lg py-md flex items-center gap-md hover:bg-secondary-container transition-colors cursor-pointer">
+<div class="w-10 h-10 rounded-full bg-tertiary-fixed flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-tertiary">check_circle</span>
+</div>
+<div class="flex-grow">
+<div class="flex justify-between items-start">
+<h3 class="font-body-md text-body-md font-semibold text-on-surface">同步任务完成</h3>
+<span class="text-on-surface-variant font-label-md text-label-md">08:00</span>
+</div>
+<p class="text-on-surface-variant text-body-md">昨日财务数据已全量同步至管理后台。</p>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-md py-xs pb-safe bg-surface-container border-t border-outline-variant shadow-md rounded-t-lg h-20">
+<a class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-full px-4 py-1 transition-transform duration-100 active:scale-95" href="#">
+<span class="material-symbols-outlined" data-weight="fill">dashboard</span>
+<span class="font-label-md text-label-md">Overview</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant p-2 hover:text-primary transition-transform duration-100 active:scale-95" href="#">
+<span class="material-symbols-outlined">insights</span>
+<span class="font-label-md text-label-md">Analytics</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant p-2 hover:text-primary transition-transform duration-100 active:scale-95" href="#">
+<span class="material-symbols-outlined">description</span>
+<span class="font-label-md text-label-md">Reports</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant p-2 hover:text-primary transition-transform duration-100 active:scale-95" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-md text-label-md">Settings</span>
+</a>
+</nav>
+<script>
+        // Micro-interaction for cards
+        document.querySelectorAll('section > div').forEach(card => {
+            card.addEventListener('touchstart', () => {
+                card.style.transform = 'scale(0.98)';
+                card.style.transition = 'transform 0.1s ease';
+            });
+            card.addEventListener('touchend', () => {
+                card.style.transform = 'scale(1)';
+            });
+        });
+
+        // Simple Chart Animation Simulation
+        const chartPath = document.querySelector('.chart-gradient-fill');
+        if (chartPath) {
+            chartPath.style.opacity = '0';
+            setTimeout(() => {
+                chartPath.style.transition = 'opacity 1s ease-in-out';
+                chartPath.style.opacity = '1';
+            }, 300);
+        }
+    </script>
+</body></html>

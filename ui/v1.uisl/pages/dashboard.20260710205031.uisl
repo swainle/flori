@@ -1,0 +1,300 @@
+# 数据大屏页面，参考 ui/idea/dash.html，按 UISL v0.3.0 描述结构、显示语义、状态与行为。
+meta.name: pageDashboardOverview
+meta.title: 数据大屏
+meta.type: Page
+meta.description: 移动优先的数据大屏页面，展示关键指标、业务增长趋势、实时预警和底部导航。
+
+structure.page.type: MobileDashboardPage
+structure.page.slots["header"].children["topAppBarDashboard"].type: TopAppBar
+structure.page.slots["header"].children["topAppBarDashboard"].order: 10
+structure.page.slots["main"].children["metricGridDashboard"].type: MetricGrid
+structure.page.slots["main"].children["metricGridDashboard"].order: 20
+structure.page.slots["main"].children["contentGridDashboard"].type: ResponsiveGrid
+structure.page.slots["main"].children["contentGridDashboard"].order: 30
+structure.page.slots["footer"].children["bottomNavDashboard"].type: BottomNav
+structure.page.slots["footer"].children["bottomNavDashboard"].order: 40
+
+structure.topAppBarDashboard.children["avatarUser"].type: Avatar
+structure.topAppBarDashboard.children["avatarUser"].order: 10
+structure.topAppBarDashboard.children["title"].type: Text
+structure.topAppBarDashboard.children["title"].order: 20
+structure.topAppBarDashboard.actions["notifications"].type: IconButton
+
+structure.metricGridDashboard.children["metricRevenue"].type: MetricCard
+structure.metricGridDashboard.children["metricRevenue"].order: 10
+structure.metricGridDashboard.children["metricActiveUsers"].type: MetricCard
+structure.metricGridDashboard.children["metricActiveUsers"].order: 20
+structure.metricGridDashboard.children["metricConversionRate"].type: MetricCard
+structure.metricGridDashboard.children["metricConversionRate"].order: 30
+structure.metricGridDashboard.children["metricTodo"].type: MetricCard
+structure.metricGridDashboard.children["metricTodo"].order: 40
+
+structure.contentGridDashboard.children["chartBusinessGrowth"].type: AreaChartCard
+structure.contentGridDashboard.children["chartBusinessGrowth"].order: 10
+structure.contentGridDashboard.children["alertListRealtime"].type: AlertList
+structure.contentGridDashboard.children["alertListRealtime"].order: 20
+
+structure.chartBusinessGrowth.children["title"].type: Text
+structure.chartBusinessGrowth.children["title"].order: 10
+structure.chartBusinessGrowth.actions["timeRange"].type: DropdownButton
+structure.chartBusinessGrowth.children["areaChart"].type: AreaChart
+structure.chartBusinessGrowth.children["areaChart"].order: 20
+
+structure.alertListRealtime.actions["viewAll"].type: Button
+structure.alertListRealtime.children["alertStock"].type: AlertItem
+structure.alertListRealtime.children["alertStock"].order: 10
+structure.alertListRealtime.children["alertOrder"].type: AlertItem
+structure.alertListRealtime.children["alertOrder"].order: 20
+structure.alertListRealtime.children["alertSync"].type: AlertItem
+structure.alertListRealtime.children["alertSync"].order: 30
+
+structure.bottomNavDashboard.children["navOverview"].type: NavItem
+structure.bottomNavDashboard.children["navOverview"].order: 10
+structure.bottomNavDashboard.children["navAnalytics"].type: NavItem
+structure.bottomNavDashboard.children["navAnalytics"].order: 20
+structure.bottomNavDashboard.children["navReports"].type: NavItem
+structure.bottomNavDashboard.children["navReports"].order: 30
+structure.bottomNavDashboard.children["navSettings"].type: NavItem
+structure.bottomNavDashboard.children["navSettings"].order: 40
+
+style.default.radius: token.radius.lg
+style.default.shadow: token.shadow.xs
+style.default.fontSize: token.font.size.sm
+style.default.labelFontWeight: token.font.weight.medium
+style.default.titleFontWeight: token.font.weight.semibold
+
+style.page.title: 数据大屏
+style.page.platform: MobileWeb
+style.page.width: 100%
+style.page.maxWidth: 1440px
+style.page.minHeight: 100vh
+style.page.padding: token.spacing.md
+style.page.background: token.colors.pageBackground
+style.page.fontFamily: token.font.family.base
+style.page.fontSize: token.font.size.sm
+style.page.lineHeight: token.font.lineHeight.normal
+style.page.titleFontSize: token.font.size.lg
+style.page.titleFontWeight: token.font.weight.medium
+style.page.bottomSafeArea: true
+
+style.topAppBarDashboard.position: StickyTop
+style.topAppBarDashboard.layout: Horizontal
+style.topAppBarDashboard.align: Between
+style.topAppBarDashboard.width: 100%
+style.topAppBarDashboard.height: 64
+style.topAppBarDashboard.padding: token.spacing.md
+style.topAppBarDashboard.gap: token.spacing.md
+style.topAppBarDashboard.background: token.colors.surface
+style.topAppBarDashboard.borderBottom: token.colors.border
+style.topAppBarDashboard.shadow: token.shadow.none
+style.topAppBarDashboard.children["avatarUser"].shape: Circle
+style.topAppBarDashboard.children["avatarUser"].size: 40
+style.topAppBarDashboard.children["avatarUser"].render: Avatar
+style.topAppBarDashboard.children["avatarUser"].alt: 专业商务头像
+style.topAppBarDashboard.children["title"].text: 数据大屏
+style.topAppBarDashboard.children["title"].render: Text
+style.topAppBarDashboard.children["title"].fontSize: token.font.size.lg
+style.topAppBarDashboard.children["title"].fontWeight: token.font.weight.medium
+style.topAppBarDashboard.actions["notifications"].icon: Notifications
+style.topAppBarDashboard.actions["notifications"].variant: Icon
+style.topAppBarDashboard.actions["notifications"].radius: token.radius.full
+style.topAppBarDashboard.actions["notifications"].ariaLabel: 通知
+
+style.metricGridDashboard.layout: Grid
+style.metricGridDashboard.width: 100%
+style.metricGridDashboard.gap: token.spacing.md
+style.metricGridDashboard.columns.mobile: 2
+style.metricGridDashboard.columns.tablet: 4
+style.metricGridDashboard.columns.desktop: 4
+style.metricGridDashboard.children["metricRevenue"].label: 今日营收
+style.metricGridDashboard.children["metricRevenue"].value: ¥42,850
+style.metricGridDashboard.children["metricRevenue"].trendLabel: +12%
+style.metricGridDashboard.children["metricRevenue"].trendDirection: Up
+style.metricGridDashboard.children["metricRevenue"].trendColor: Success
+style.metricGridDashboard.children["metricRevenue"].render: Currency
+style.metricGridDashboard.children["metricRevenue"].sparkline: M0,25 Q15,5 30,20 T60,10 T90,25 T100,15
+style.metricGridDashboard.children["metricRevenue"].radius: token.radius.lg
+style.metricGridDashboard.children["metricRevenue"].shadow: token.shadow.xs
+style.metricGridDashboard.children["metricActiveUsers"].label: 活跃用户
+style.metricGridDashboard.children["metricActiveUsers"].value: 1,284
+style.metricGridDashboard.children["metricActiveUsers"].trendLabel: +8%
+style.metricGridDashboard.children["metricActiveUsers"].trendDirection: Up
+style.metricGridDashboard.children["metricActiveUsers"].trendColor: Success
+style.metricGridDashboard.children["metricActiveUsers"].render: Number
+style.metricGridDashboard.children["metricActiveUsers"].sparkline: M0,15 Q20,25 40,15 T70,20 T100,5
+style.metricGridDashboard.children["metricActiveUsers"].radius: token.radius.lg
+style.metricGridDashboard.children["metricActiveUsers"].shadow: token.shadow.xs
+style.metricGridDashboard.children["metricConversionRate"].label: 转化率
+style.metricGridDashboard.children["metricConversionRate"].value: 3.42%
+style.metricGridDashboard.children["metricConversionRate"].trendLabel: -2%
+style.metricGridDashboard.children["metricConversionRate"].trendDirection: Down
+style.metricGridDashboard.children["metricConversionRate"].trendColor: Danger
+style.metricGridDashboard.children["metricConversionRate"].render: Percent
+style.metricGridDashboard.children["metricConversionRate"].sparkline: M0,5 Q20,10 40,25 T70,15 T100,20
+style.metricGridDashboard.children["metricConversionRate"].radius: token.radius.lg
+style.metricGridDashboard.children["metricConversionRate"].shadow: token.shadow.xs
+style.metricGridDashboard.children["metricTodo"].label: 待办事项
+style.metricGridDashboard.children["metricTodo"].value: 12
+style.metricGridDashboard.children["metricTodo"].statusLabel: 进行中
+style.metricGridDashboard.children["metricTodo"].statusColor: Primary
+style.metricGridDashboard.children["metricTodo"].render: Number
+style.metricGridDashboard.children["metricTodo"].sparkline: M0,20 L20,15 L40,22 L60,10 L80,18 L100,5
+style.metricGridDashboard.children["metricTodo"].radius: token.radius.lg
+style.metricGridDashboard.children["metricTodo"].shadow: token.shadow.xs
+
+style.contentGridDashboard.layout: Grid
+style.contentGridDashboard.width: 100%
+style.contentGridDashboard.gap: token.spacing.lg
+style.contentGridDashboard.columns.mobile: 1
+style.contentGridDashboard.columns.tablet: 2
+style.contentGridDashboard.columns.desktop: 2
+style.contentGridDashboard.columnRatio.desktop: 1.55fr 0.8fr
+
+style.chartBusinessGrowth.card: true
+style.chartBusinessGrowth.width: 100%
+style.chartBusinessGrowth.minHeight: 272
+style.chartBusinessGrowth.padding: token.spacing.lg
+style.chartBusinessGrowth.radius: token.radius.lg
+style.chartBusinessGrowth.shadow: token.shadow.xs
+style.chartBusinessGrowth.title: 业务增长趋势
+style.chartBusinessGrowth.subtitle: 最近7天
+style.chartBusinessGrowth.actions["timeRange"].label: 最近7天
+style.chartBusinessGrowth.actions["timeRange"].icon: ExpandMore
+style.chartBusinessGrowth.actions["timeRange"].variant: Ghost
+style.chartBusinessGrowth.children["areaChart"].render: Area
+style.chartBusinessGrowth.children["areaChart"].lineColor: Primary
+style.chartBusinessGrowth.children["areaChart"].fillColor: PrimaryTranslucent
+style.chartBusinessGrowth.children["areaChart"].xAxisLabels: 周一,周二,周三,周四,周五,周六,周日
+style.chartBusinessGrowth.children["areaChart"].showGrid: true
+style.chartBusinessGrowth.children["areaChart"].height: 226
+
+style.alertListRealtime.card: true
+style.alertListRealtime.width: 100%
+style.alertListRealtime.radius: token.radius.lg
+style.alertListRealtime.shadow: token.shadow.xs
+style.alertListRealtime.overflow: Hidden
+style.alertListRealtime.title: 实时预警
+style.alertListRealtime.actions["viewAll"].label: 查看全部
+style.alertListRealtime.actions["viewAll"].variant: Link
+style.alertListRealtime.children["alertStock"].icon: Warning
+style.alertListRealtime.children["alertStock"].severity: Error
+style.alertListRealtime.children["alertStock"].title: 库存预警: 核心组件
+style.alertListRealtime.children["alertStock"].description: SKU-2930 当前库存低于安全水平 (15/100)。
+style.alertListRealtime.children["alertStock"].time: 10:24
+style.alertListRealtime.children["alertOrder"].icon: Info
+style.alertListRealtime.children["alertOrder"].severity: Info
+style.alertListRealtime.children["alertOrder"].title: 新订单已生成
+style.alertListRealtime.children["alertOrder"].description: 来自华东区的批量采购订单已进入待审核队列。
+style.alertListRealtime.children["alertOrder"].time: 09:15
+style.alertListRealtime.children["alertSync"].icon: CheckCircle
+style.alertListRealtime.children["alertSync"].severity: Success
+style.alertListRealtime.children["alertSync"].title: 同步任务完成
+style.alertListRealtime.children["alertSync"].description: 昨日财务数据已全量同步至管理后台。
+style.alertListRealtime.children["alertSync"].time: 08:00
+
+style.bottomNavDashboard.position: FixedBottom
+style.bottomNavDashboard.layout: Horizontal
+style.bottomNavDashboard.width: 100%
+style.bottomNavDashboard.height: 80
+style.bottomNavDashboard.padding: token.spacing.sm
+style.bottomNavDashboard.background: token.colors.surface
+style.bottomNavDashboard.borderTop: token.colors.border
+style.bottomNavDashboard.radius: token.radius.lg
+style.bottomNavDashboard.shadow: token.shadow.sm
+style.bottomNavDashboard.children["navOverview"].label: Overview
+style.bottomNavDashboard.children["navOverview"].icon: Dashboard
+style.bottomNavDashboard.children["navOverview"].active: true
+style.bottomNavDashboard.children["navAnalytics"].label: Analytics
+style.bottomNavDashboard.children["navAnalytics"].icon: Insights
+style.bottomNavDashboard.children["navReports"].label: Reports
+style.bottomNavDashboard.children["navReports"].icon: Description
+style.bottomNavDashboard.children["navSettings"].label: Settings
+style.bottomNavDashboard.children["navSettings"].icon: Settings
+
+data.metricGridDashboard.children["metricRevenue"].field: revenueToday
+data.metricGridDashboard.children["metricActiveUsers"].field: activeUsers
+data.metricGridDashboard.children["metricConversionRate"].field: conversionRate
+data.metricGridDashboard.children["metricTodo"].field: todoCount
+data.chartBusinessGrowth.children["areaChart"].source: state.chartBusinessGrowth.series
+data.alertListRealtime.source: state.alertListRealtime.items
+
+state.dashboard.activeNav: overview
+state.dashboard.timeRange: recent7Days
+state.metricGridDashboard.revenueToday.value: 42850
+state.metricGridDashboard.revenueToday.displayValue: ¥42,850
+state.metricGridDashboard.revenueToday.trendPercent: 12
+state.metricGridDashboard.activeUsers.value: 1284
+state.metricGridDashboard.activeUsers.displayValue: 1,284
+state.metricGridDashboard.activeUsers.trendPercent: 8
+state.metricGridDashboard.conversionRate.value: 3.42
+state.metricGridDashboard.conversionRate.displayValue: 3.42%
+state.metricGridDashboard.conversionRate.trendPercent: -2
+state.metricGridDashboard.todoCount.value: 12
+state.metricGridDashboard.todoCount.status: 进行中
+state.chartBusinessGrowth.series["businessGrowth"].label: 业务增长
+state.chartBusinessGrowth.series["businessGrowth"].points: 130,110,140,90,40,70,50,30,10
+state.chartBusinessGrowth.xAxisLabels: 周一,周二,周三,周四,周五,周六,周日
+state.alertListRealtime.items["alertStock"].severity: error
+state.alertListRealtime.items["alertStock"].title: 库存预警: 核心组件
+state.alertListRealtime.items["alertStock"].description: SKU-2930 当前库存低于安全水平 (15/100)。
+state.alertListRealtime.items["alertStock"].time: 10:24
+state.alertListRealtime.items["alertOrder"].severity: info
+state.alertListRealtime.items["alertOrder"].title: 新订单已生成
+state.alertListRealtime.items["alertOrder"].description: 来自华东区的批量采购订单已进入待审核队列。
+state.alertListRealtime.items["alertOrder"].time: 09:15
+state.alertListRealtime.items["alertSync"].severity: success
+state.alertListRealtime.items["alertSync"].title: 同步任务完成
+state.alertListRealtime.items["alertSync"].description: 昨日财务数据已全量同步至管理后台。
+state.alertListRealtime.items["alertSync"].time: 08:00
+
+behavior.topAppBarDashboard.actions["notifications"].onClick: toast:通知中心
+behavior.chartBusinessGrowth.actions["timeRange"].onClick: toast:切换时间范围
+behavior.alertListRealtime.actions["viewAll"].onClick: navigate:/alerts
+behavior.alertListRealtime.children["alertStock"].onClick: navigate:/alerts/stock
+behavior.alertListRealtime.children["alertOrder"].onClick: navigate:/orders/review
+behavior.alertListRealtime.children["alertSync"].onClick: navigate:/sync/tasks
+behavior.bottomNavDashboard.children["navOverview"].onClick: setState:state.dashboard.activeNav=overview, navigate:/dashboard
+behavior.bottomNavDashboard.children["navAnalytics"].onClick: setState:state.dashboard.activeNav=analytics, navigate:/analytics
+behavior.bottomNavDashboard.children["navReports"].onClick: setState:state.dashboard.activeNav=reports, navigate:/reports
+behavior.bottomNavDashboard.children["navSettings"].onClick: setState:state.dashboard.activeNav=settings, navigate:/settings
+
+permission.page.required: dashboard.read
+permission.topAppBarDashboard.actions["notifications"].required: notification.read
+permission.alertListRealtime.actions["viewAll"].required: alert.read
+permission.bottomNavDashboard.children["navOverview"].required: dashboard.read
+permission.bottomNavDashboard.children["navAnalytics"].required: analytics.read
+permission.bottomNavDashboard.children["navReports"].required: report.read
+permission.bottomNavDashboard.children["navSettings"].required: settings.read
+
+responsive.breakpoints["mobile"].maxWidth: 767
+responsive.breakpoints["tablet"].minWidth: 768
+responsive.breakpoints["tablet"].maxWidth: 1023
+responsive.breakpoints["desktop"].minWidth: 1024
+responsive.breakpoints["wide"].minWidth: 1440
+responsive.mobile.page.width: 100vw
+responsive.mobile.page.minHeight: 100vh
+responsive.mobile.page.padding: token.spacing.md
+responsive.mobile.metricGridDashboard.layout: Grid
+responsive.mobile.metricGridDashboard.columns: 2
+responsive.mobile.metricGridDashboard.gap: token.spacing.md
+responsive.mobile.contentGridDashboard.layout: Vertical
+responsive.mobile.contentGridDashboard.columns: 1
+responsive.mobile.contentGridDashboard.gap: token.spacing.lg
+responsive.mobile.chartBusinessGrowth.width: 100%
+responsive.mobile.chartBusinessGrowth.minHeight: 272
+responsive.mobile.alertListRealtime.width: 100%
+responsive.mobile.bottomNavDashboard.display: FixedBottom
+responsive.mobile.bottomNavDashboard.height: 80
+responsive.tablet.page.padding: token.spacing.lg
+responsive.tablet.metricGridDashboard.columns: 4
+responsive.tablet.contentGridDashboard.layout: Grid
+responsive.tablet.contentGridDashboard.columns: 2
+responsive.tablet.chartBusinessGrowth.minHeight: 320
+responsive.desktop.page.maxWidth: 1440
+responsive.desktop.page.padding: token.spacing.lg
+responsive.desktop.metricGridDashboard.columns: 4
+responsive.desktop.contentGridDashboard.layout: Grid
+responsive.desktop.contentGridDashboard.columns: 2
+responsive.desktop.contentGridDashboard.columnRatio: 1.55fr 0.8fr
+responsive.desktop.chartBusinessGrowth.minHeight: 360
+responsive.desktop.bottomNavDashboard.display: Hidden

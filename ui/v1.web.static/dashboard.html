@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>数据大屏</title>
+  <style>
+    :root {
+      --blue-900: #0b2d5f;
+      --blue-800: #0f3f86;
+      --blue-700: #1257b9;
+      --blue-600: #1a73e8;
+      --blue-500: #2f80ed;
+      --blue-100: #eaf2ff;
+      --blue-050: #f6f9ff;
+      --ink: #152033;
+      --muted: #5d6b82;
+      --soft: #8b98aa;
+      --line: #d8e3f5;
+      --surface: #ffffff;
+      --surface-blue: #f4f8ff;
+      --success: #0f8a4b;
+      --success-bg: #e7f7ee;
+      --danger: #c83232;
+      --danger-bg: #ffebeb;
+      --warning-bg: #fff5d6;
+      --shadow: 0 18px 45px rgba(15, 63, 134, 0.12);
+      --shadow-sm: 0 10px 24px rgba(15, 63, 134, 0.08);
+      --radius: 18px;
+      --radius-sm: 12px;
+      --nav-width: 248px;
+      font-family: Inter, "Segoe UI", "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      overflow-x: hidden;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 85% 8%, rgba(26, 115, 232, 0.14), transparent 28%),
+        linear-gradient(135deg, #ffffff 0%, #f7fbff 38%, #eef6ff 100%);
+    }
+
+    button,
+    a {
+      font: inherit;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .app {
+      display: grid;
+      grid-template-columns: var(--nav-width) minmax(0, 1fr);
+      min-height: 100vh;
+      min-width: 0;
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      padding: 28px 18px;
+      background: linear-gradient(180deg, var(--blue-900), var(--blue-800));
+      color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 0 10px;
+    }
+
+    .brand-mark {
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      background: #ffffff;
+      color: var(--blue-700);
+      display: grid;
+      place-items: center;
+      box-shadow: 0 10px 22px rgba(0, 0, 0, 0.18);
+    }
+
+    .brand-title {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 0;
+    }
+
+    .brand-subtitle {
+      margin-top: 2px;
+      color: rgba(255, 255, 255, 0.68);
+      font-size: 12px;
+    }
+
+    .nav-list {
+      display: grid;
+      gap: 8px;
+    }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-height: 46px;
+      padding: 0 13px;
+      border-radius: 14px;
+      color: rgba(255, 255, 255, 0.76);
+      transition: background 160ms ease, color 160ms ease, transform 160ms ease;
+    }
+
+    .nav-link:hover {
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.12);
+      transform: translateX(2px);
+    }
+
+    .nav-link.active {
+      color: var(--blue-900);
+      background: #ffffff;
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.16);
+    }
+
+    .sidebar-note {
+      margin-top: auto;
+      padding: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .sidebar-note strong {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 13px;
+    }
+
+    .sidebar-note span {
+      color: rgba(255, 255, 255, 0.72);
+      font-size: 12px;
+      line-height: 1.55;
+    }
+
+    .main-shell {
+      min-width: 0;
+      padding: 28px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      margin-bottom: 24px;
+      min-width: 0;
+    }
+
+    .page-title h1 {
+      margin: 0;
+      color: var(--blue-900);
+      font-size: clamp(28px, 3vw, 42px);
+      line-height: 1.1;
+      font-weight: 750;
+      letter-spacing: 0;
+    }
+
+    .page-title p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .avatar {
+      width: 44px;
+      height: 44px;
+      border: 2px solid #ffffff;
+      border-radius: 50%;
+      background: var(--blue-100);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+      display: block;
+      object-fit: cover;
+    }
+
+    .icon-button,
+    .range-button,
+    .link-button {
+      border: 0;
+      cursor: pointer;
+      transition: transform 150ms ease, box-shadow 150ms ease, background 150ms ease;
+    }
+
+    .icon-button {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      color: var(--blue-700);
+      background: var(--surface);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .icon-button:hover,
+    .range-button:hover,
+    .link-button:hover {
+      transform: translateY(-1px);
+    }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.55fr) minmax(340px, 0.8fr);
+      gap: 22px;
+      align-items: start;
+      min-width: 0;
+    }
+
+    .primary-column,
+    .secondary-column {
+      display: grid;
+      gap: 22px;
+      min-width: 0;
+    }
+
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 16px;
+      min-width: 0;
+    }
+
+    .card {
+      min-width: 0;
+      background: rgba(255, 255, 255, 0.86);
+      border: 1px solid rgba(216, 227, 245, 0.9);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
+      backdrop-filter: blur(12px);
+    }
+
+    .metric-card {
+      min-height: 168px;
+      padding: 18px;
+      display: grid;
+      align-content: space-between;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .metric-card::after {
+      content: "";
+      position: absolute;
+      inset: auto -34px -42px auto;
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: rgba(26, 115, 232, 0.08);
+    }
+
+    .metric-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-start;
+      position: relative;
+      z-index: 1;
+    }
+
+    .metric-label,
+    .section-subtle {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .trend,
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      min-height: 24px;
+      padding: 0 8px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .trend.up,
+    .status-pill {
+      color: var(--success);
+      background: var(--success-bg);
+    }
+
+    .trend.down {
+      color: var(--danger);
+      background: var(--danger-bg);
+    }
+
+    .metric-value {
+      margin-top: 16px;
+      color: var(--blue-900);
+      font-size: 30px;
+      line-height: 1;
+      font-weight: 760;
+      position: relative;
+      z-index: 1;
+    }
+
+    .sparkline {
+      width: 100%;
+      height: 44px;
+      margin-top: 14px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .chart-card {
+      min-height: 430px;
+      padding: 24px;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .section-title {
+      margin: 0;
+      color: var(--blue-900);
+      font-size: 20px;
+      line-height: 1.25;
+      font-weight: 720;
+    }
+
+    .range-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 38px;
+      padding: 0 14px;
+      color: var(--blue-700);
+      background: var(--blue-100);
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .chart-wrap {
+      height: 320px;
+      position: relative;
+    }
+
+    .chart-axis {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 10px;
+      color: var(--soft);
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .alert-card {
+      overflow: hidden;
+    }
+
+    .alert-header {
+      padding: 22px 22px 14px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .link-button {
+      color: var(--blue-700);
+      background: transparent;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .alert-list {
+      display: grid;
+    }
+
+    .alert-item {
+      display: grid;
+      grid-template-columns: 44px minmax(0, 1fr) auto;
+      gap: 14px;
+      align-items: start;
+      padding: 18px 22px;
+      border-bottom: 1px solid var(--line);
+      cursor: pointer;
+      transition: background 150ms ease;
+    }
+
+    .alert-item:last-child {
+      border-bottom: 0;
+    }
+
+    .alert-item:hover {
+      background: var(--surface-blue);
+    }
+
+    .alert-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+    }
+
+    .alert-icon.error {
+      color: var(--danger);
+      background: var(--danger-bg);
+    }
+
+    .alert-icon.info {
+      color: var(--blue-700);
+      background: var(--blue-100);
+    }
+
+    .alert-icon.success {
+      color: var(--success);
+      background: var(--success-bg);
+    }
+
+    .alert-title {
+      margin: 0;
+      color: var(--ink);
+      font-size: 15px;
+      font-weight: 720;
+      line-height: 1.35;
+    }
+
+    .alert-desc {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .alert-time {
+      color: var(--soft);
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .summary-card {
+      padding: 22px;
+      background: linear-gradient(160deg, var(--blue-700), var(--blue-900));
+      color: #ffffff;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .summary-card::before {
+      content: "";
+      position: absolute;
+      width: 220px;
+      height: 220px;
+      right: -72px;
+      top: -80px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.12);
+    }
+
+    .summary-content {
+      position: relative;
+      z-index: 1;
+    }
+
+    .summary-card h2 {
+      margin: 0;
+      font-size: 20px;
+      line-height: 1.3;
+    }
+
+    .summary-card p {
+      margin: 8px 0 20px;
+      color: rgba(255, 255, 255, 0.76);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .summary-stats {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .summary-stat {
+      padding: 14px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+    }
+
+    .summary-stat strong {
+      display: block;
+      font-size: 22px;
+      line-height: 1;
+    }
+
+    .summary-stat span {
+      display: block;
+      margin-top: 7px;
+      color: rgba(255, 255, 255, 0.72);
+      font-size: 12px;
+    }
+
+    .bottom-nav {
+      display: none;
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 24px;
+      transform: translate(-50%, 20px);
+      padding: 12px 16px;
+      border-radius: 999px;
+      color: #ffffff;
+      background: var(--blue-900);
+      box-shadow: var(--shadow);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 180ms ease, transform 180ms ease;
+      z-index: 20;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+
+    svg.icon {
+      width: 20px;
+      height: 20px;
+      flex: 0 0 auto;
+    }
+
+    @media (max-width: 1180px) {
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .secondary-column {
+        grid-template-columns: minmax(0, 0.75fr) minmax(340px, 1fr);
+      }
+    }
+
+    @media (max-width: 960px) {
+      .app {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        display: none;
+      }
+
+      .main-shell {
+        padding: 22px 18px 104px;
+        width: 100%;
+      }
+
+      .metric-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .secondary-column {
+        grid-template-columns: 1fr;
+      }
+
+      .bottom-nav {
+        position: fixed;
+        left: 14px;
+        right: 14px;
+        bottom: 14px;
+        z-index: 10;
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 6px;
+        padding: 8px;
+        border: 1px solid var(--line);
+        border-radius: 22px;
+        background: rgba(255, 255, 255, 0.94);
+        box-shadow: var(--shadow);
+        backdrop-filter: blur(16px);
+      }
+
+      .bottom-nav a {
+        display: grid;
+        place-items: center;
+        gap: 4px;
+        min-height: 54px;
+        border-radius: 16px;
+        color: var(--muted);
+        font-size: 11px;
+        font-weight: 700;
+        min-width: 0;
+      }
+
+      .bottom-nav a.active {
+        color: #ffffff;
+        background: var(--blue-700);
+      }
+    }
+
+    @media (max-width: 640px) {
+      .topbar {
+        align-items: flex-start;
+      }
+
+      .page-title h1 {
+        font-size: 25px;
+      }
+
+      .page-title p {
+        display: none;
+      }
+
+      .top-actions {
+        gap: 8px;
+      }
+
+      .avatar {
+        width: 40px;
+        height: 40px;
+      }
+
+      .metric-grid {
+        gap: 12px;
+      }
+
+      .metric-card {
+        min-height: 148px;
+        padding: 14px;
+      }
+
+      .metric-value {
+        font-size: clamp(20px, 6vw, 23px);
+      }
+
+      .metric-label,
+      .trend,
+      .status-pill {
+        font-size: 11px;
+      }
+
+      .trend,
+      .status-pill {
+        padding: 0 7px;
+      }
+
+      .chart-card {
+        min-height: 360px;
+        padding: 18px;
+      }
+
+      .chart-wrap {
+        height: 244px;
+      }
+
+      .alert-item {
+        grid-template-columns: 40px minmax(0, 1fr);
+      }
+
+      .alert-time {
+        grid-column: 2;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar" aria-label="主导航">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">
+          <svg class="icon" viewBox="0 0 24 24" fill="none">
+            <path d="M4 13.5h5.2V20H4v-6.5Zm0-9.5h5.2v7H4V4Zm7.4 0H20v4.8h-8.6V4Zm0 7H20v9h-8.6v-9Z" fill="currentColor"/>
+          </svg>
+        </div>
+        <div>
+          <div class="brand-title">数据大屏</div>
+          <div class="brand-subtitle">Business Insight</div>
+        </div>
+      </div>
+
+      <nav class="nav-list">
+        <a class="nav-link active" href="#overview" data-nav="Overview">
+          <svg class="icon" viewBox="0 0 24 24" fill="none"><path d="M4 13h7V4H4v9Zm0 7h7v-5H4v5Zm9 0h7v-9h-7v9Zm0-16v5h7V4h-7Z" fill="currentColor"/></svg>
+          Overview
+        </a>
+        <a class="nav-link" href="#analytics" data-nav="Analytics">
+          <svg class="icon" viewBox="0 0 24 24" fill="none"><path d="M4 18.5 9.6 12l3.9 3.9L20 6.5l-1.8-1.2-5 7.2-3.8-3.8L2.5 17l1.5 1.5Z" fill="currentColor"/></svg>
+          Analytics
+        </a>
+        <a class="nav-link" href="#reports" data-nav="Reports">
+          <svg class="icon" viewBox="0 0 24 24" fill="none"><path d="M6 3h9l4 4v14H6V3Zm8 1.8V8h3.2L14 4.8ZM8.5 12h7v-1.8h-7V12Zm0 4h7v-1.8h-7V16Z" fill="currentColor"/></svg>
+          Reports
+        </a>
+        <a class="nav-link" href="#settings" data-nav="Settings">
+          <svg class="icon" viewBox="0 0 24 24" fill="none"><path d="M10.8 3h2.4l.5 2.2c.6.2 1.2.4 1.8.8l2-1.2 1.7 1.7-1.2 2c.3.5.6 1.1.8 1.8l2.2.5v2.4l-2.2.5c-.2.6-.4 1.2-.8 1.8l1.2 2-1.7 1.7-2-1.2c-.5.3-1.1.6-1.8.8l-.5 2.2h-2.4l-.5-2.2c-.6-.2-1.2-.4-1.8-.8l-2 1.2-1.7-1.7 1.2-2c-.3-.5-.6-1.1-.8-1.8L3 13.2v-2.4l2.2-.5c.2-.6.4-1.2.8-1.8l-1.2-2 1.7-1.7 2 1.2c.5-.3 1.1-.6 1.8-.8L10.8 3Zm1.2 6a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z" fill="currentColor"/></svg>
+          Settings
+        </a>
+      </nav>
+
+      <div class="sidebar-note">
+        <strong>最近7天</strong>
+        <span>业务增长保持上行，库存与订单审核是当前最值得关注的事项。</span>
+      </div>
+    </aside>
+
+    <main class="main-shell" id="overview">
+      <header class="topbar">
+        <div class="page-title">
+          <h1>数据大屏</h1>
+          <p>关键指标、增长趋势与实时预警的网页端静态总览。</p>
+        </div>
+        <div class="top-actions">
+          <button class="icon-button" type="button" data-toast="通知中心">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 22a2.4 2.4 0 0 0 2.3-1.7H9.7A2.4 2.4 0 0 0 12 22Zm7-5.2-1.8-2.1V10a5.2 5.2 0 0 0-4-5.1V3.8a1.2 1.2 0 0 0-2.4 0v1.1a5.2 5.2 0 0 0-4 5.1v4.7L5 16.8V18h14v-1.2Z" fill="currentColor"/></svg>
+          </button>
+          <img
+            class="avatar"
+            data-uisl='topAppBarDashboard.children["avatarUser"]'
+            src='data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96"%3E%3Cdefs%3E%3ClinearGradient id="bg" x1="12" x2="84" y1="8" y2="88" gradientUnits="userSpaceOnUse"%3E%3Cstop stop-color="%23eaf2ff"/%3E%3Cstop offset="1" stop-color="%23b9d5ff"/%3E%3C/linearGradient%3E%3ClinearGradient id="jacket" x1="22" x2="74" y1="56" y2="96" gradientUnits="userSpaceOnUse"%3E%3Cstop stop-color="%230f3f86"/%3E%3Cstop offset="1" stop-color="%231a73e8"/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width="96" height="96" rx="48" fill="url(%23bg)"/%3E%3Ccircle cx="48" cy="35" r="18" fill="%23f4c9aa"/%3E%3Cpath d="M29 90c2-20 10-31 19-31s17 11 19 31H29Z" fill="%23ffffff"/%3E%3Cpath d="M15 96c4-24 18-36 33-36s29 12 33 36H15Z" fill="url(%23jacket)"/%3E%3Cpath d="M32 23c7-12 29-12 35 3 2 6 0 13-3 17-4-7-9-10-17-10-7 0-12 3-16 9-3-6-3-13 1-19Z" fill="%23152033"/%3E%3Ccircle cx="41" cy="38" r="2" fill="%23152033"/%3E%3Ccircle cx="55" cy="38" r="2" fill="%23152033"/%3E%3Cpath d="M42 48c4 3 8 3 12 0" fill="none" stroke="%23845a42" stroke-width="2" stroke-linecap="round"/%3E%3C/svg%3E'
+            alt="专业商务头像"
+          />
+        </div>
+      </header>
+
+      <section class="metric-grid" aria-label="关键指标">
+        <article class="card metric-card">
+          <div>
+            <div class="metric-head">
+              <span class="metric-label">今日营收</span>
+              <span class="trend up">+12% ↑</span>
+            </div>
+            <div class="metric-value">¥42,850</div>
+          </div>
+          <svg class="sparkline" viewBox="0 0 120 44" preserveAspectRatio="none" aria-hidden="true">
+            <path d="M0 35 Q18 7 36 28 T72 14 T108 35 T120 20" fill="none" stroke="#1a73e8" stroke-width="3" stroke-linecap="round"/>
+          </svg>
+        </article>
+
+        <article class="card metric-card">
+          <div>
+            <div class="metric-head">
+              <span class="metric-label">活跃用户</span>
+              <span class="trend up">+8% ↑</span>
+            </div>
+            <div class="metric-value">1,284</div>
+          </div>
+          <svg class="sparkline" viewBox="0 0 120 44" preserveAspectRatio="none" aria-hidden="true">
+            <path d="M0 24 Q24 36 48 24 T84 28 T120 8" fill="none" stroke="#1a73e8" stroke-width="3" stroke-linecap="round"/>
+          </svg>
+        </article>
+
+        <article class="card metric-card">
+          <div>
+            <div class="metric-head">
+              <span class="metric-label">转化率</span>
+              <span class="trend down">-2% ↓</span>
+            </div>
+            <div class="metric-value">3.42%</div>
+          </div>
+          <svg class="sparkline" viewBox="0 0 120 44" preserveAspectRatio="none" aria-hidden="true">
+            <path d="M0 8 Q24 14 48 36 T84 22 T120 30" fill="none" stroke="#c83232" stroke-width="3" stroke-linecap="round"/>
+          </svg>
+        </article>
+
+        <article class="card metric-card">
+          <div>
+            <div class="metric-head">
+              <span class="metric-label">待办事项</span>
+              <span class="status-pill">进行中</span>
+            </div>
+            <div class="metric-value">12</div>
+          </div>
+          <svg class="sparkline" viewBox="0 0 120 44" preserveAspectRatio="none" aria-hidden="true">
+            <path d="M0 28 L24 22 L48 31 L72 14 L96 25 L120 8" fill="none" stroke="#1a73e8" stroke-width="3" stroke-linecap="round"/>
+          </svg>
+        </article>
+      </section>
+
+      <div class="dashboard-grid" style="margin-top: 22px;">
+        <div class="primary-column">
+          <section class="card chart-card" aria-label="业务增长趋势">
+            <div class="section-header">
+              <div>
+                <h2 class="section-title">业务增长趋势</h2>
+                <div class="section-subtle">最近7天</div>
+              </div>
+              <button class="range-button" type="button" data-toast="切换时间范围">
+                最近7天
+                <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m7 9 5 5 5-5H7Z" fill="currentColor"/></svg>
+              </button>
+            </div>
+            <div class="chart-wrap">
+              <svg width="100%" height="100%" viewBox="0 0 760 320" preserveAspectRatio="none" role="img" aria-label="业务增长趋势折线面积图">
+                <defs>
+                  <linearGradient id="blueFill" x1="0" x2="0" y1="0" y2="1">
+                    <stop offset="0%" stop-color="#1a73e8" stop-opacity="0.32"/>
+                    <stop offset="100%" stop-color="#1a73e8" stop-opacity="0"/>
+                  </linearGradient>
+                </defs>
+                <g stroke="#d8e3f5" stroke-width="1">
+                  <line x1="0" x2="760" y1="42" y2="42"/>
+                  <line x1="0" x2="760" y1="104" y2="104"/>
+                  <line x1="0" x2="760" y1="166" y2="166"/>
+                  <line x1="0" x2="760" y1="228" y2="228"/>
+                  <line x1="0" x2="760" y1="290" y2="290"/>
+                </g>
+                <path d="M0 270 C95 232 190 288 285 190 C380 72 475 128 570 96 C665 58 760 22 760 22 L760 320 L0 320 Z" fill="url(#blueFill)"/>
+                <path d="M0 270 C95 232 190 288 285 190 C380 72 475 128 570 96 C665 58 760 22 760 22" fill="none" stroke="#1a73e8" stroke-width="5" stroke-linecap="round"/>
+                <circle cx="285" cy="190" r="7" fill="#1a73e8" stroke="#fff" stroke-width="4"/>
+                <circle cx="760" cy="22" r="7" fill="#1a73e8" stroke="#fff" stroke-width="4"/>
+              </svg>
+              <div class="chart-axis" aria-hidden="true">
+                <span>周一</span><span>周二</span><span>周三</span><span>周四</span><span>周五</span><span>周六</span><span>周日</span>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <div class="secondary-column">
+          <section class="card summary-card" aria-label="今日概览">
+            <div class="summary-content">
+              <h2>今日概览</h2>
+              <p>营收和活跃用户继续增长，转化率略有回落，建议优先处理库存预警与订单审核。</p>
+              <div class="summary-stats">
+                <div class="summary-stat">
+                  <strong>+12%</strong>
+                  <span>营收增长</span>
+                </div>
+                <div class="summary-stat">
+                  <strong>3</strong>
+                  <span>实时预警</span>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="card alert-card" aria-label="实时预警">
+            <div class="section-header alert-header">
+              <h2 class="section-title">实时预警</h2>
+              <button class="link-button" type="button" data-toast="查看全部预警">查看全部</button>
+            </div>
+            <div class="alert-list">
+              <article class="alert-item" data-toast="库存预警: 核心组件">
+                <div class="alert-icon error">
+                  <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3 2 21h20L12 3Zm1 14h-2v2h2v-2Zm0-7h-2v5h2v-5Z" fill="currentColor"/></svg>
+                </div>
+                <div>
+                  <h3 class="alert-title">库存预警: 核心组件</h3>
+                  <p class="alert-desc">SKU-2930 当前库存低于安全水平 (15/100)。</p>
+                </div>
+                <time class="alert-time">10:24</time>
+              </article>
+
+              <article class="alert-item" data-toast="新订单已生成">
+                <div class="alert-icon info">
+                  <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M11 17h2v-6h-2v6Zm0-8h2V7h-2v2Zm1 13a10 10 0 1 1 0-20 10 10 0 0 1 0 20Z" fill="currentColor"/></svg>
+                </div>
+                <div>
+                  <h3 class="alert-title">新订单已生成</h3>
+                  <p class="alert-desc">来自华东区的批量采购订单已进入待审核队列。</p>
+                </div>
+                <time class="alert-time">09:15</time>
+              </article>
+
+              <article class="alert-item" data-toast="同步任务完成">
+                <div class="alert-icon success">
+                  <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m10.2 15.2 6.9-6.9 1.4 1.4-8.3 8.3-4.7-4.7 1.4-1.4 3.3 3.3ZM12 22a10 10 0 1 1 0-20 10 10 0 0 1 0 20Z" fill="currentColor"/></svg>
+                </div>
+                <div>
+                  <h3 class="alert-title">同步任务完成</h3>
+                  <p class="alert-desc">昨日财务数据已全量同步至管理后台。</p>
+                </div>
+                <time class="alert-time">08:00</time>
+              </article>
+            </div>
+          </section>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <nav class="bottom-nav" aria-label="移动端底部导航">
+    <a class="active" href="#overview" data-nav="Overview">
+      <svg class="icon" viewBox="0 0 24 24" fill="none"><path d="M4 13h7V4H4v9Zm0 7h7v-5H4v5Zm9 0h7v-9h-7v9Zm0-16v5h7V4h-7Z" fill="currentColor"/></svg>
+      Overview
+    </a>
+    <a href="#analytics" data-nav="Analytics">
+      <svg class="icon" viewBox="0 0 24 24" fill="none"><path d="M4 18.5 9.6 12l3.9 3.9L20 6.5l-1.8-1.2-5 7.2-3.8-3.8L2.5 17l1.5 1.5Z" fill="currentColor"/></svg>
+      Analytics
+    </a>
+    <a href="#reports" data-nav="Reports">
+      <svg class="icon" viewBox="0 0 24 24" fill="none"><path d="M6 3h9l4 4v14H6V3Zm8 1.8V8h3.2L14 4.8ZM8.5 12h7v-1.8h-7V12Zm0 4h7v-1.8h-7V16Z" fill="currentColor"/></svg>
+      Reports
+    </a>
+    <a href="#settings" data-nav="Settings">
+      <svg class="icon" viewBox="0 0 24 24" fill="none"><path d="M10.8 3h2.4l.5 2.2c.6.2 1.2.4 1.8.8l2-1.2 1.7 1.7-1.2 2c.3.5.6 1.1.8 1.8l2.2.5v2.4l-2.2.5c-.2.6-.4 1.2-.8 1.8l1.2 2-1.7 1.7-2-1.2c-.5.3-1.1.6-1.8.8l-.5 2.2h-2.4l-.5-2.2c-.6-.2-1.2-.4-1.8-.8l-2 1.2-1.7-1.7 1.2-2c-.3-.5-.6-1.1-.8-1.8L3 13.2v-2.4l2.2-.5c.2-.6.4-1.2.8-1.8l-1.2-2 1.7-1.7 2 1.2c.5-.3 1.1-.6 1.8-.8L10.8 3Zm1.2 6a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z" fill="currentColor"/></svg>
+      Settings
+    </a>
+  </nav>
+
+  <div class="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    const toast = document.querySelector(".toast");
+    let toastTimer;
+
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.add("show");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove("show"), 1500);
+    }
+
+    document.querySelectorAll("[data-toast]").forEach((node) => {
+      node.addEventListener("click", () => showToast(node.dataset.toast));
+    });
+
+    document.querySelectorAll("[data-nav]").forEach((node) => {
+      node.addEventListener("click", (event) => {
+        const name = node.dataset.nav;
+        document.querySelectorAll("[data-nav]").forEach((item) => {
+          item.classList.toggle("active", item.dataset.nav === name);
+        });
+        showToast(`${name} 已选中`);
+        if (node.getAttribute("href") === "#overview") {
+          return;
+        }
+        event.preventDefault();
+      });
+    });
+  </script>
+</body>
+</html>

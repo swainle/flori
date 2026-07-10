@@ -1,12 +1,12 @@
 # UISL 规范
 
-- 规范版本：v0.1.0
-- 状态：PUSH
+- 规范版本：v0.2.0
+- 状态：Draft
 - 更新时间：2026-07-10
 
 ## 版本说明
 
-UISL 规范文档使用 `vMAJOR.MINOR.PATCH` 格式，例如 `v0.1.0`。
+UISL 规范文档使用 `vMAJOR.MINOR.PATCH` 格式，例如 `v0.2.0`。
 
 - `MAJOR`：不兼容的语法变化。
 - `MINOR`：新增能力、字段、type 或推荐写法。
@@ -255,33 +255,187 @@ structure.page.slots["main"].children["paginationProduct"].order: 40
 
 ## 9. style
 
-`style` 描述组件的显示语义和基础样式，不等同于完整 CSS。
+`style` 描述组件的显示语义和基础视觉意图，不等同于完整 CSS。
+
+UISL 可以描述对多端生成有稳定价值的视觉语义，例如布局方向、尺寸策略、圆角等级、轻微阴影、字体层级、密度、留白和基础色彩 token。
+
+具体颜色值、复杂动画、精确阴影参数、特殊 CSS hack、平台组件库私有样式，仍建议在目标平台代码中处理。
 
 ```text
 style.<componentName>.<property>: value
 style.<componentName>.<collection>["key"].<property>: value
 ```
 
-页面与工具栏：
+### 9.1 页面与工具栏
 
 ```text
 style.page.title: 产品管理
 style.page.padding: token.spacing.lg
 style.page.background: token.colors.pageBackground
+style.page.minHeight: 100vh
+style.page.maxWidth: 100%
 
 style.toolbarProduct.layout: Horizontal
 style.toolbarProduct.align: Right
+style.toolbarProduct.height: 48
+style.toolbarProduct.gap: token.spacing.sm
 style.toolbarProduct.actions["create"].label: 新增产品
 style.toolbarProduct.actions["create"].variant: Primary
 style.toolbarProduct.actions["create"].icon: Plus
 ```
 
-表格：
+### 9.2 尺寸与空间
+
+推荐使用语义化尺寸，必要时允许使用 `px`、`%`、`vw`、`vh`、`calc(...)` 等值。
+
+```text
+style.<component>.width: 100%
+style.<component>.height: Auto
+style.<component>.minHeight: 320
+style.<component>.maxHeight: calc(100vh - 240px)
+style.<component>.padding: token.spacing.md
+style.<component>.gap: token.spacing.sm
+style.<component>.overflow: Auto
+```
+
+推荐尺寸策略枚举：
+
+```text
+Auto,Fill,Hug,Fixed,FullWidth,FullHeight,ViewportHeight,Content,Scroll
+```
+
+示例：
+
+```text
+style.tableProduct.width: 100%
+style.tableProduct.height: Auto
+style.tableProduct.maxHeight: calc(100vh - 280px)
+style.tableProduct.overflow: Auto
+```
+
+### 9.3 圆角
+
+组件圆角推荐使用中等偏小的默认风格，避免过大导致后台系统显得松散。
+
+推荐 token：
+
+```text
+token.radius.xs      # 极小圆角，例如 2px
+token.radius.sm      # 小圆角，例如 4px
+token.radius.smMd    # 中等偏小圆角，例如 6px
+token.radius.md      # 中等圆角，例如 8px
+token.radius.lg      # 大圆角，例如 12px
+```
+
+推荐默认：
+
+```text
+style.card.radius: token.radius.smMd
+style.modalProduct.radius: token.radius.smMd
+style.tableProduct.radius: token.radius.sm
+style.toolbarProduct.actions["create"].radius: token.radius.smMd
+```
+
+如果没有特殊设计诉求，后台管理类页面优先使用：
+
+```text
+style.default.radius: token.radius.smMd
+```
+
+### 9.4 阴影与轻微层次感
+
+UISL 可以描述“少许阴影效果”或轻微层次感，但不建议在 UISL 中写复杂 box-shadow 细节。
+
+推荐 token：
+
+```text
+token.shadow.none
+token.shadow.xs      # 极轻微阴影，适合卡片、表单容器
+token.shadow.sm      # 轻微阴影，适合弹窗、浮层
+token.shadow.md      # 中等阴影，谨慎使用
+```
+
+示例：
+
+```text
+style.card.shadow: token.shadow.xs
+style.modalProduct.shadow: token.shadow.sm
+style.dropdown.shadow: token.shadow.sm
+style.tableProduct.shadow: token.shadow.none
+```
+
+推荐原则：
+
+```text
+后台页面：优先 token.shadow.xs 或 token.shadow.none
+弹窗浮层：优先 token.shadow.sm
+重要悬浮层：可使用 token.shadow.md
+```
+
+### 9.5 字体样式与大小
+
+字体不建议直接绑定某个平台字体类名，而应描述文本层级、字号、字重、行高。
+
+推荐 token：
+
+```text
+token.font.family.base
+token.font.family.mono
+
+token.font.size.xs
+token.font.size.sm
+token.font.size.md
+token.font.size.lg
+token.font.size.xl
+
+token.font.weight.regular
+token.font.weight.medium
+token.font.weight.semibold
+token.font.weight.bold
+
+token.font.lineHeight.tight
+token.font.lineHeight.normal
+token.font.lineHeight.relaxed
+```
+
+页面字体建议：
+
+```text
+style.page.fontFamily: token.font.family.base
+style.page.fontSize: token.font.size.sm
+style.page.lineHeight: token.font.lineHeight.normal
+
+style.page.titleFontSize: token.font.size.xl
+style.page.titleFontWeight: token.font.weight.semibold
+```
+
+组件字体建议：
+
+```text
+style.tableProduct.fontSize: token.font.size.sm
+style.tableProduct.columns["name"].fontWeight: token.font.weight.medium
+style.formProduct.fields["name"].labelFontSize: token.font.size.sm
+style.formProduct.fields["name"].labelFontWeight: token.font.weight.medium
+style.toolbarProduct.actions["create"].fontWeight: token.font.weight.medium
+```
+
+后台管理页面推荐整体偏紧凑：
+
+```text
+style.default.fontSize: token.font.size.sm
+style.default.labelFontWeight: token.font.weight.medium
+style.default.titleFontWeight: token.font.weight.semibold
+```
+
+### 9.6 表格
 
 ```text
 style.tableProduct.size: Compact
 style.tableProduct.bordered: true
 style.tableProduct.emptyText: 暂无数据
+style.tableProduct.radius: token.radius.sm
+style.tableProduct.shadow: token.shadow.none
+style.tableProduct.fontSize: token.font.size.sm
 
 style.tableProduct.columns["name"].label: 产品名称
 style.tableProduct.columns["name"].width: 220
@@ -309,13 +463,15 @@ style.tableProduct.columns["status"].tagMap["disabled"].label: 禁用
 style.tableProduct.columns["status"].tagMap["disabled"].color: Danger
 ```
 
-Design Token 示例：
+### 9.7 Design Token 汇总
 
 ```text
 token.colors.primary
 token.colors.surface
 token.colors.pageBackground
 token.colors.border
+token.colors.textPrimary
+token.colors.textSecondary
 
 token.spacing.xs
 token.spacing.sm
@@ -323,9 +479,28 @@ token.spacing.md
 token.spacing.lg
 token.spacing.xl
 
+token.radius.xs
 token.radius.sm
+token.radius.smMd
 token.radius.md
 token.radius.lg
+
+token.shadow.none
+token.shadow.xs
+token.shadow.sm
+token.shadow.md
+
+token.font.family.base
+token.font.size.xs
+token.font.size.sm
+token.font.size.md
+token.font.size.lg
+token.font.size.xl
+token.font.weight.regular
+token.font.weight.medium
+token.font.weight.semibold
+token.font.weight.bold
+token.font.lineHeight.normal
 ```
 
 ## 10. data
@@ -585,16 +760,130 @@ behavior.component.children["jumpButton"].onClick: emit:pageJump
 
 ## 19. responsive（可选）
 
+`responsive` 用于描述不同屏幕尺寸下的显示方式、宽度、高度、最大高度、间距、布局方向、溢出策略和组件密度。
+
+它不要求完整复刻 CSS media query，而是描述多端生成时需要保持一致的自适应意图。
+
+### 19.1 断点
+
 ```text
 responsive.breakpoints["mobile"].maxWidth: 767
 responsive.breakpoints["tablet"].minWidth: 768
 responsive.breakpoints["tablet"].maxWidth: 1023
 responsive.breakpoints["desktop"].minWidth: 1024
+responsive.breakpoints["wide"].minWidth: 1440
+```
+
+### 19.2 推荐属性
+
+```text
+responsive.<screen>.<component>.display: Table
+responsive.<screen>.<component>.layout: Horizontal
+responsive.<screen>.<component>.width: 100%
+responsive.<screen>.<component>.minWidth: 320
+responsive.<screen>.<component>.maxWidth: 1200
+responsive.<screen>.<component>.height: Auto
+responsive.<screen>.<component>.minHeight: 320
+responsive.<screen>.<component>.maxHeight: calc(100vh - 240px)
+responsive.<screen>.<component>.padding: token.spacing.md
+responsive.<screen>.<component>.gap: token.spacing.sm
+responsive.<screen>.<component>.overflow: Auto
+responsive.<screen>.<component>.density: Compact
+```
+
+推荐属性含义：
+
+```text
+display     显示形态，例如 Table、CardList、Grid、Hidden
+layout      布局方向，例如 Horizontal、Vertical、Dropdown
+width       宽度
+height      高度
+minWidth    最小宽度
+maxWidth    最大宽度
+minHeight   最小高度
+maxHeight   最大高度
+overflow    内容溢出策略，例如 Visible、Hidden、Auto、Scroll
+density     组件密度，例如 Compact、Normal、Comfortable
+```
+
+### 19.3 桌面端示例
+
+```text
+responsive.desktop.page.width: 100%
+responsive.desktop.page.minHeight: 100vh
+responsive.desktop.page.padding: token.spacing.lg
+responsive.desktop.page.maxWidth: 100%
 
 responsive.desktop.toolbarProduct.layout: Horizontal
-responsive.mobile.toolbarProduct.layout: Dropdown
+responsive.desktop.toolbarProduct.height: 48
+responsive.desktop.toolbarProduct.gap: token.spacing.sm
+
+responsive.desktop.filterProduct.layout: Horizontal
+responsive.desktop.filterProduct.width: 100%
+responsive.desktop.filterProduct.height: Auto
+
 responsive.desktop.tableProduct.display: Table
+responsive.desktop.tableProduct.width: 100%
+responsive.desktop.tableProduct.maxHeight: calc(100vh - 280px)
+responsive.desktop.tableProduct.overflow: Auto
+
+responsive.desktop.paginationProduct.layout: Horizontal
+responsive.desktop.paginationProduct.height: 48
+```
+
+### 19.4 平板端示例
+
+```text
+responsive.tablet.page.padding: token.spacing.md
+responsive.tablet.toolbarProduct.layout: Horizontal
+responsive.tablet.filterProduct.layout: Wrap
+responsive.tablet.tableProduct.display: Table
+responsive.tablet.tableProduct.width: 100%
+responsive.tablet.tableProduct.maxHeight: calc(100vh - 260px)
+responsive.tablet.tableProduct.overflow: Auto
+responsive.tablet.modalProduct.width: 80vw
+responsive.tablet.modalProduct.maxHeight: 80vh
+```
+
+### 19.5 移动端示例
+
+```text
+responsive.mobile.page.padding: token.spacing.sm
+responsive.mobile.page.width: 100vw
+responsive.mobile.page.minHeight: 100vh
+
+responsive.mobile.toolbarProduct.layout: Dropdown
+responsive.mobile.toolbarProduct.width: 100%
+responsive.mobile.toolbarProduct.height: Auto
+
+responsive.mobile.filterProduct.layout: Vertical
+responsive.mobile.filterProduct.width: 100%
+responsive.mobile.filterProduct.gap: token.spacing.sm
+
 responsive.mobile.tableProduct.display: CardList
+responsive.mobile.tableProduct.width: 100%
+responsive.mobile.tableProduct.height: Auto
+responsive.mobile.tableProduct.maxHeight: none
+responsive.mobile.tableProduct.overflow: Visible
+
+responsive.mobile.paginationProduct.layout: Vertical
+responsive.mobile.paginationProduct.width: 100%
+responsive.mobile.paginationProduct.height: Auto
+
+responsive.mobile.modalProduct.width: 100vw
+responsive.mobile.modalProduct.height: 100vh
+responsive.mobile.modalProduct.radius: token.radius.sm
+```
+
+### 19.6 自适应原则
+
+```text
+1. 桌面端优先展示完整信息，例如 Table、Horizontal Toolbar。
+2. 平板端允许换行和收缩，例如 Wrap FilterForm。
+3. 移动端优先纵向布局，例如 CardList、Vertical Form。
+4. 大面积列表组件应设置 maxHeight 与 overflow，避免页面整体失控。
+5. 弹窗在移动端可接近全屏，圆角应比桌面端更小。
+6. 宽高控制使用语义属性，具体 CSS 由目标平台生成。
 ```
 
 ## 20. 平台页面元素定位
@@ -674,6 +963,8 @@ structure.toolbarProduct.actions["create"].type: Button
 
 style.toolbarProduct.layout: Horizontal
 style.toolbarProduct.align: Right
+style.toolbarProduct.height: 48
+style.toolbarProduct.gap: token.spacing.sm
 style.toolbarProduct.actions["create"].label: 新增产品
 style.toolbarProduct.actions["create"].variant: Primary
 style.toolbarProduct.actions["create"].icon: Plus
@@ -733,6 +1024,9 @@ structure.tableProduct.rowActions["delete"].type: Action
 style.tableProduct.size: Compact
 style.tableProduct.bordered: true
 style.tableProduct.emptyText: 暂无数据
+style.tableProduct.radius: token.radius.sm
+style.tableProduct.shadow: token.shadow.none
+style.tableProduct.fontSize: token.font.size.sm
 
 data.tableProduct.sources["getProductList"].method: GET
 data.tableProduct.sources["getProductList"].path: /api/v1/products
@@ -788,6 +1082,8 @@ structure.modalProduct.children["formProduct"].type: Form
 style.modalProduct.title.create: 新增产品
 style.modalProduct.title.edit: 编辑产品
 style.modalProduct.width: 720
+style.modalProduct.radius: token.radius.smMd
+style.modalProduct.shadow: token.shadow.sm
 
 state.modalProduct.visible: false
 state.modalProduct.mode: create
@@ -844,6 +1140,8 @@ structure.page.slots["main"].children["paginationProduct"].type: PaginationCard
 
 style.paginationProduct.layout: Horizontal
 style.paginationProduct.card: true
+style.paginationProduct.radius: token.radius.smMd
+style.paginationProduct.shadow: token.shadow.xs
 
 behavior.paginationProduct.onPageChange: setState:state.tableProduct.pagination.currentPage=$event.page, callApi:tableProduct.getProductList
 behavior.paginationProduct.onPageSizeChange: setState:state.tableProduct.pagination.pageSize=$event.pageSize, setState:state.tableProduct.pagination.currentPage=1, callApi:tableProduct.getProductList
@@ -943,7 +1241,8 @@ validation 是否绑定了存在的字段
 数据接口变化：更新 UISL
 权限变化：更新 UISL
 校验变化：更新 UISL
-纯视觉细节：优先直接修改目标平台代码
+通用视觉语义变化：可以更新 UISL
+平台私有视觉细节：优先直接修改目标平台代码
 ```
 
 示例：
@@ -952,14 +1251,24 @@ validation 是否绑定了存在的字段
 增加一列产品状态：更新 UISL
 新增删除按钮：更新 UISL
 修改 getProductList 接口参数：更新 UISL
-把卡片圆角调大：直接修改目标平台代码
-把按钮阴影调轻：直接修改目标平台代码
+统一页面组件圆角为中等偏小：可以更新 UISL style / token
+统一表格移动端改为 CardList：可以更新 UISL responsive
+统一字体层级和字号：可以更新 UISL style / token
+某个 shadcn Button 的 className 微调：直接修改目标平台代码
+某个 CSS 阴影参数精确调试：直接修改目标平台代码
+```
+
+判断标准：
+
+```text
+跨平台、可复用、可解释的视觉意图：写入 UISL
+只服务某个框架或某个页面细节的视觉实现：修改目标平台代码
 ```
 
 ## 25. 核心原则
 
 ```text
-1. UISL 主要描述结构和显示语义。
+1. UISL 主要描述结构、显示语义和跨平台稳定视觉意图。
 2. 每一行只描述一个属性。
 3. type 使用 PascalCase。
 4. name 使用 camelCase。
@@ -973,6 +1282,11 @@ validation 是否绑定了存在的字段
 12. 状态统一放在 state 层。
 13. 行为使用动作流水线。
 14. 组件 / 页面 / Layout 内部不维护 meta.version。
-15. 纯视觉细节可以直接修改目标平台页面代码。
-16. 结构、行为、数据变化必须回写 UISL。
+15. responsive 可描述不同屏幕下的宽度、高度、布局、溢出和显示形态。
+16. 圆角、阴影、字体等通用视觉语义可使用 token 描述。
+17. 后台系统默认圆角建议中等偏小，例如 token.radius.smMd。
+18. 阴影建议少量使用，默认优先 token.shadow.xs 或 token.shadow.none。
+19. 字体建议使用 token 描述字号、字重、行高和文本层级。
+20. 纯平台私有视觉细节可以直接修改目标平台页面代码。
+21. 结构、行为、数据变化必须回写 UISL。
 ```

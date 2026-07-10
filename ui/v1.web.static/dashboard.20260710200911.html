@@ -1,0 +1,1032 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>数据大屏 · 小清新</title>
+  <style>
+    :root {
+      --mint-700: #12856f;
+      --mint-600: #18a58a;
+      --mint-500: #2ec4a6;
+      --mint-100: #ddf8f1;
+      --mint-050: #f2fffb;
+      --sky-700: #2563c9;
+      --sky-600: #3d8bfd;
+      --sky-500: #64b5ff;
+      --sky-100: #e7f4ff;
+      --sky-050: #f6fbff;
+      --ink: #12304a;
+      --muted: #627a92;
+      --soft: #91a6ba;
+      --line: #d8ebf7;
+      --surface: rgba(255, 255, 255, 0.9);
+      --white: #ffffff;
+      --coral: #ef5b62;
+      --coral-bg: #fff0f1;
+      --amber: #f8b84e;
+      --shadow: 0 24px 60px rgba(45, 127, 188, 0.14);
+      --shadow-soft: 0 14px 34px rgba(45, 127, 188, 0.1);
+      --radius-xl: 28px;
+      --radius-lg: 22px;
+      --radius-md: 16px;
+      --nav-width: 236px;
+      font-family: Inter, "Segoe UI", "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      min-height: 100%;
+      overflow-x: hidden;
+    }
+
+    body {
+      color: var(--ink);
+      background:
+        linear-gradient(120deg, rgba(230, 250, 255, 0.92), rgba(246, 255, 251, 0.88) 42%, rgba(239, 249, 255, 0.95)),
+        #f7fcff;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: -2;
+      background-image:
+        radial-gradient(circle at 16% 18%, rgba(46, 196, 166, 0.22), transparent 28%),
+        radial-gradient(circle at 86% 14%, rgba(100, 181, 255, 0.26), transparent 30%),
+        radial-gradient(circle at 78% 84%, rgba(221, 248, 241, 0.9), transparent 26%);
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button {
+      border: 0;
+      font: inherit;
+      cursor: pointer;
+    }
+
+    .app {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: var(--nav-width) minmax(0, 1fr);
+      gap: 22px;
+      padding: 18px;
+    }
+
+    .sidebar {
+      min-height: calc(100vh - 36px);
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      padding: 22px;
+      border: 1px solid rgba(216, 235, 247, 0.82);
+      border-radius: 30px;
+      background: rgba(255, 255, 255, 0.72);
+      box-shadow: var(--shadow-soft);
+      backdrop-filter: blur(18px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-mark {
+      width: 48px;
+      height: 48px;
+      border-radius: 18px;
+      display: grid;
+      place-items: center;
+      color: var(--mint-700);
+      background:
+        linear-gradient(145deg, rgba(255, 255, 255, 0.82), rgba(221, 248, 241, 0.92)),
+        var(--white);
+      box-shadow: inset 0 0 0 1px rgba(24, 165, 138, 0.14), 0 12px 26px rgba(24, 165, 138, 0.14);
+    }
+
+    .brand-title {
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: 0;
+    }
+
+    .brand-subtitle {
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .nav-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .nav-link {
+      min-height: 48px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 0 14px;
+      border-radius: 17px;
+      color: var(--muted);
+      font-weight: 700;
+      transition: background 180ms ease, color 180ms ease, transform 180ms ease;
+    }
+
+    .nav-link:hover {
+      color: var(--sky-700);
+      background: rgba(231, 244, 255, 0.72);
+      transform: translateX(2px);
+    }
+
+    .nav-link.active {
+      color: var(--sky-700);
+      background: linear-gradient(135deg, rgba(231, 244, 255, 0.94), rgba(221, 248, 241, 0.88));
+      box-shadow: inset 0 0 0 1px rgba(61, 139, 253, 0.12);
+    }
+
+    .fresh-note {
+      margin-top: auto;
+      min-height: 182px;
+      padding: 18px;
+      border-radius: 24px;
+      background:
+        linear-gradient(165deg, rgba(221, 248, 241, 0.88), rgba(231, 244, 255, 0.86)),
+        var(--white);
+      border: 1px solid rgba(46, 196, 166, 0.14);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .fresh-note svg {
+      position: absolute;
+      right: -6px;
+      bottom: -10px;
+      width: 118px;
+      height: 118px;
+      opacity: 0.9;
+    }
+
+    .fresh-note strong {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--mint-700);
+      font-size: 15px;
+    }
+
+    .fresh-note span {
+      display: block;
+      max-width: 132px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.7;
+    }
+
+    .main {
+      min-width: 0;
+      display: grid;
+      gap: 22px;
+    }
+
+    .topbar {
+      min-height: 76px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 12px 4px 0;
+    }
+
+    .title-block h1 {
+      margin: 0;
+      color: var(--ink);
+      font-size: clamp(30px, 3vw, 44px);
+      line-height: 1.05;
+      letter-spacing: 0;
+      font-weight: 850;
+    }
+
+    .title-block p {
+      margin: 9px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.5;
+      font-weight: 600;
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .icon-button {
+      width: 46px;
+      height: 46px;
+      display: grid;
+      place-items: center;
+      border-radius: 18px;
+      color: var(--sky-700);
+      background: var(--surface);
+      box-shadow: var(--shadow-soft);
+      transition: transform 160ms ease, box-shadow 160ms ease;
+    }
+
+    .avatar {
+      width: 48px;
+      height: 48px;
+      border: 3px solid rgba(255, 255, 255, 0.9);
+      border-radius: 50%;
+      background: var(--sky-100);
+      box-shadow: var(--shadow-soft);
+      object-fit: cover;
+      display: block;
+    }
+
+    .icon-button:hover,
+    .filter-pill:hover,
+    .view-link:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 18px 38px rgba(45, 127, 188, 0.14);
+    }
+
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 16px;
+      min-width: 0;
+    }
+
+    .card {
+      min-width: 0;
+      border: 1px solid rgba(216, 235, 247, 0.86);
+      border-radius: var(--radius-xl);
+      background: var(--surface);
+      box-shadow: var(--shadow-soft);
+      backdrop-filter: blur(18px);
+    }
+
+    .metric-card {
+      min-height: 164px;
+      padding: 18px;
+      display: grid;
+      align-content: space-between;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .metric-card::after {
+      content: "";
+      position: absolute;
+      right: -28px;
+      bottom: -34px;
+      width: 118px;
+      height: 118px;
+      border-radius: 40px;
+      background: linear-gradient(145deg, rgba(221, 248, 241, 0.76), rgba(231, 244, 255, 0.92));
+      transform: rotate(18deg);
+    }
+
+    .metric-head,
+    .metric-value,
+    .sparkline {
+      position: relative;
+      z-index: 1;
+    }
+
+    .metric-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: flex-start;
+    }
+
+    .label {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 750;
+    }
+
+    .chip {
+      min-height: 24px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 0 9px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .chip.up,
+    .chip.status {
+      color: var(--mint-700);
+      background: var(--mint-100);
+    }
+
+    .chip.down {
+      color: var(--coral);
+      background: var(--coral-bg);
+    }
+
+    .metric-value {
+      margin-top: 14px;
+      color: var(--ink);
+      font-size: 30px;
+      line-height: 1;
+      font-weight: 850;
+    }
+
+    .sparkline {
+      width: 100%;
+      height: 42px;
+      margin-top: 10px;
+    }
+
+    .content-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.45fr) minmax(330px, 0.78fr);
+      gap: 20px;
+      align-items: start;
+      min-width: 0;
+    }
+
+    .chart-card {
+      min-height: 452px;
+      padding: 24px;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+
+    .section-title {
+      margin: 0;
+      color: var(--ink);
+      font-size: 21px;
+      line-height: 1.25;
+      font-weight: 850;
+    }
+
+    .subtle {
+      margin-top: 4px;
+      color: var(--soft);
+      font-size: 12px;
+      font-weight: 750;
+    }
+
+    .filter-pill {
+      min-height: 40px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 14px;
+      border-radius: 999px;
+      color: var(--sky-700);
+      background: var(--sky-100);
+      font-size: 13px;
+      font-weight: 850;
+      transition: transform 160ms ease, box-shadow 160ms ease;
+    }
+
+    .chart-wrap {
+      height: 322px;
+      position: relative;
+    }
+
+    .axis {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 12px;
+      color: var(--soft);
+      font-size: 12px;
+      font-weight: 750;
+    }
+
+    .side-stack {
+      display: grid;
+      gap: 20px;
+      min-width: 0;
+    }
+
+    .summary {
+      padding: 23px;
+      color: var(--ink);
+      background:
+        linear-gradient(150deg, rgba(255, 255, 255, 0.92), rgba(221, 248, 241, 0.82)),
+        var(--white);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .summary::after {
+      content: "";
+      position: absolute;
+      right: -42px;
+      top: -38px;
+      width: 148px;
+      height: 148px;
+      border-radius: 52px;
+      background: rgba(100, 181, 255, 0.18);
+      transform: rotate(20deg);
+    }
+
+    .summary h2 {
+      position: relative;
+      z-index: 1;
+      margin: 0;
+      font-size: 22px;
+      line-height: 1.25;
+      font-weight: 850;
+    }
+
+    .summary p {
+      position: relative;
+      z-index: 1;
+      margin: 10px 0 20px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.75;
+      font-weight: 600;
+    }
+
+    .summary-grid {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .summary-tile {
+      padding: 15px;
+      border-radius: 20px;
+      border: 1px solid rgba(46, 196, 166, 0.18);
+      background: rgba(255, 255, 255, 0.72);
+    }
+
+    .summary-tile strong {
+      display: block;
+      color: var(--mint-700);
+      font-size: 24px;
+      line-height: 1;
+    }
+
+    .summary-tile span {
+      display: block;
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .alert-card {
+      overflow: hidden;
+    }
+
+    .alert-card .section-header {
+      margin: 0;
+      padding: 21px 22px 15px;
+      border-bottom: 1px solid var(--line);
+      align-items: center;
+    }
+
+    .view-link {
+      color: var(--sky-700);
+      background: transparent;
+      font-size: 13px;
+      font-weight: 850;
+      transition: transform 160ms ease;
+    }
+
+    .alert-list {
+      display: grid;
+    }
+
+    .alert-item {
+      display: grid;
+      grid-template-columns: 44px minmax(0, 1fr) auto;
+      gap: 14px;
+      align-items: start;
+      padding: 18px 22px;
+      border-bottom: 1px solid var(--line);
+      transition: background 160ms ease;
+      cursor: pointer;
+    }
+
+    .alert-item:last-child {
+      border-bottom: 0;
+    }
+
+    .alert-item:hover {
+      background: rgba(246, 251, 255, 0.92);
+    }
+
+    .alert-icon {
+      width: 44px;
+      height: 44px;
+      display: grid;
+      place-items: center;
+      border-radius: 17px;
+    }
+
+    .alert-icon.error {
+      color: var(--coral);
+      background: var(--coral-bg);
+    }
+
+    .alert-icon.info {
+      color: var(--sky-700);
+      background: var(--sky-100);
+    }
+
+    .alert-icon.success {
+      color: var(--mint-700);
+      background: var(--mint-100);
+    }
+
+    .alert-title {
+      margin: 0;
+      color: var(--ink);
+      font-size: 15px;
+      line-height: 1.35;
+      font-weight: 850;
+    }
+
+    .alert-desc {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+      font-weight: 600;
+    }
+
+    .alert-time {
+      color: var(--soft);
+      font-size: 12px;
+      font-weight: 850;
+      white-space: nowrap;
+    }
+
+    .bottom-nav {
+      display: none;
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 22px;
+      z-index: 30;
+      transform: translate(-50%, 18px);
+      padding: 12px 16px;
+      border-radius: 999px;
+      color: var(--white);
+      background: var(--ink);
+      box-shadow: var(--shadow);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 180ms ease, transform 180ms ease;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+
+    .icon {
+      width: 20px;
+      height: 20px;
+      flex: 0 0 auto;
+    }
+
+    @media (max-width: 1180px) {
+      .content-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .side-stack {
+        grid-template-columns: minmax(0, 0.8fr) minmax(360px, 1fr);
+      }
+    }
+
+    @media (max-width: 960px) {
+      .app {
+        grid-template-columns: 1fr;
+        padding: 16px;
+      }
+
+      .sidebar {
+        display: none;
+      }
+
+      .metric-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .side-stack {
+        grid-template-columns: 1fr;
+      }
+
+      .bottom-nav {
+        position: fixed;
+        left: 14px;
+        right: 14px;
+        bottom: 14px;
+        z-index: 20;
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 6px;
+        padding: 8px;
+        border: 1px solid rgba(216, 235, 247, 0.92);
+        border-radius: 26px;
+        background: rgba(255, 255, 255, 0.9);
+        box-shadow: var(--shadow);
+        backdrop-filter: blur(18px);
+      }
+
+      .bottom-nav a {
+        min-height: 56px;
+        display: grid;
+        place-items: center;
+        gap: 4px;
+        border-radius: 20px;
+        color: var(--muted);
+        font-size: 11px;
+        font-weight: 850;
+      }
+
+      .bottom-nav a.active {
+        color: var(--white);
+        background: linear-gradient(135deg, var(--sky-600), var(--mint-600));
+      }
+    }
+
+    @media (max-width: 640px) {
+      .app {
+        padding: 18px;
+        padding-bottom: 104px;
+      }
+
+      .topbar {
+        align-items: flex-start;
+        min-height: 58px;
+      }
+
+      .title-block h1 {
+        font-size: 27px;
+      }
+
+      .title-block p {
+        display: none;
+      }
+
+      .top-actions {
+        gap: 8px;
+      }
+
+      .icon-button,
+      .avatar {
+        width: 42px;
+        height: 42px;
+        border-radius: 16px;
+      }
+
+      .avatar {
+        border-radius: 50%;
+      }
+
+      .metric-grid {
+        gap: 13px;
+      }
+
+      .metric-card {
+        min-height: 150px;
+        padding: 15px;
+        border-radius: 24px;
+      }
+
+      .label,
+      .chip {
+        font-size: 11px;
+      }
+
+      .chip {
+        padding: 0 7px;
+      }
+
+      .metric-value {
+        font-size: clamp(21px, 6vw, 24px);
+      }
+
+      .chart-card {
+        min-height: 374px;
+        padding: 18px;
+      }
+
+      .chart-wrap {
+        height: 242px;
+      }
+
+      .filter-pill {
+        min-height: 36px;
+        padding: 0 11px;
+        font-size: 12px;
+      }
+
+      .alert-item {
+        grid-template-columns: 42px minmax(0, 1fr);
+      }
+
+      .alert-time {
+        grid-column: 2;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar" aria-label="主导航">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">
+          <svg class="icon" viewBox="0 0 24 24" fill="none">
+            <path d="M5 13h5v6H5v-6Zm0-8h5v6H5V5Zm7 0h7v4h-7V5Zm0 6h7v8h-7v-8Z" fill="currentColor"/>
+          </svg>
+        </div>
+        <div>
+          <div class="brand-title">数据大屏</div>
+          <div class="brand-subtitle">Fresh Insight</div>
+        </div>
+      </div>
+
+      <nav class="nav-list">
+        <a class="nav-link active" href="#overview" data-nav="Overview">
+          <svg class="icon" viewBox="0 0 24 24" fill="none"><path d="M5 13h6V5H5v8Zm0 6h6v-4H5v4Zm8 0h6v-7h-6v7Zm0-14v5h6V5h-6Z" fill="currentColor"/></svg>
+          Overview
+        </a>
+        <a class="nav-link" href="#analytics" data-nav="Analytics">
+          <svg class="icon" viewBox="0 0 24 24" fill="none"><path d="m4 17 5-5 4 3.5L20 7l-1.5-1.3-5.7 6.8-4-3.5L2.7 15.7 4 17Z" fill="currentColor"/></svg>
+          Analytics
+        </a>
+        <a class="nav-link" href="#reports" data-nav="Reports">
+          <svg class="icon" viewBox="0 0 24 24" fill="none"><path d="M6 3h9l4 4v14H6V3Zm8 1.7V8h3.3L14 4.7ZM8.5 12h7v-1.6h-7V12Zm0 4h7v-1.6h-7V16Z" fill="currentColor"/></svg>
+          Reports
+        </a>
+        <a class="nav-link" href="#settings" data-nav="Settings">
+          <svg class="icon" viewBox="0 0 24 24" fill="none"><path d="M10.8 3h2.4l.5 2.1c.6.2 1.1.4 1.6.7l1.9-1.1 1.7 1.7-1.1 1.9c.3.5.6 1 .7 1.6l2.1.5v2.4l-2.1.5c-.2.6-.4 1.1-.7 1.6l1.1 1.9-1.7 1.7-1.9-1.1c-.5.3-1 .6-1.6.7l-.5 2.1h-2.4l-.5-2.1c-.6-.2-1.1-.4-1.6-.7l-1.9 1.1-1.7-1.7 1.1-1.9c-.3-.5-.6-1-.7-1.6L3 13.2v-2.4l2.1-.5c.2-.6.4-1.1.7-1.6L4.7 6.8l1.7-1.7 1.9 1.1c.5-.3 1-.6 1.6-.7l.5-2.1Zm1.2 6.1a2.9 2.9 0 1 0 0 5.8 2.9 2.9 0 0 0 0-5.8Z" fill="currentColor"/></svg>
+          Settings
+        </a>
+      </nav>
+
+      <div class="fresh-note">
+        <strong>清爽运营节奏</strong>
+        <span>关注增长，也保留一点呼吸感。今天先处理库存预警与订单审核。</span>
+        <svg viewBox="0 0 120 120" fill="none" aria-hidden="true">
+          <path d="M68 100c4-30 16-48 36-58-5 31-17 50-36 58Z" fill="#2ec4a6" opacity=".72"/>
+          <path d="M53 102c-2-31-13-50-34-62 2 32 13 52 34 62Z" fill="#64b5ff" opacity=".55"/>
+          <path d="M59 105c2-24 2-45-1-64" stroke="#12856f" stroke-width="3" stroke-linecap="round"/>
+        </svg>
+      </div>
+    </aside>
+
+    <main class="main" id="overview">
+      <header class="topbar">
+        <div class="title-block">
+          <h1>数据大屏</h1>
+          <p>关键指标、增长趋势与实时预警的小清新网页端静态总览。</p>
+        </div>
+        <div class="top-actions">
+          <button class="icon-button" type="button" data-toast="通知中心" aria-label="通知">
+            <svg class="icon" viewBox="0 0 24 24" fill="none"><path d="M12 22a2.2 2.2 0 0 0 2.1-1.5H9.9A2.2 2.2 0 0 0 12 22Zm6.8-5.3-1.6-1.9V10a5.2 5.2 0 0 0-4-5.1v-1a1.2 1.2 0 1 0-2.4 0v1a5.2 5.2 0 0 0-4 5.1v4.8l-1.6 1.9V18h13.6v-1.3Z" fill="currentColor"/></svg>
+          </button>
+          <img
+            class="avatar"
+            data-uisl='topAppBarDashboard.children["avatarUser"]'
+            alt="专业商务头像"
+            src='data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96"%3E%3Cdefs%3E%3ClinearGradient id="a" x1="15" x2="82" y1="12" y2="90" gradientUnits="userSpaceOnUse"%3E%3Cstop stop-color="%23e7f4ff"/%3E%3Cstop offset="1" stop-color="%23ddf8f1"/%3E%3C/linearGradient%3E%3ClinearGradient id="b" x1="26" x2="72" y1="62" y2="96" gradientUnits="userSpaceOnUse"%3E%3Cstop stop-color="%233d8bfd"/%3E%3Cstop offset="1" stop-color="%2318a58a"/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width="96" height="96" rx="48" fill="url(%23a)"/%3E%3Ccircle cx="48" cy="36" r="17" fill="%23f2c5a8"/%3E%3Cpath d="M30 91c3-20 10-31 18-31s16 11 18 31H30Z" fill="%23fff"/%3E%3Cpath d="M15 96c5-23 18-35 33-35s28 12 33 35H15Z" fill="url(%23b)"/%3E%3Cpath d="M31 25c7-12 27-13 34 1 3 7 1 14-2 18-4-7-9-10-16-10s-12 3-16 9c-3-5-3-12 0-18Z" fill="%2312304a"/%3E%3Ccircle cx="41" cy="39" r="2" fill="%2312304a"/%3E%3Ccircle cx="55" cy="39" r="2" fill="%2312304a"/%3E%3Cpath d="M42 49c4 3 8 3 12 0" stroke="%23835f45" stroke-width="2" stroke-linecap="round" fill="none"/%3E%3C/svg%3E'
+          />
+        </div>
+      </header>
+
+      <section class="metric-grid" aria-label="关键指标">
+        <article class="card metric-card">
+          <div>
+            <div class="metric-head">
+              <span class="label">今日营收</span>
+              <span class="chip up">+12% ↑</span>
+            </div>
+            <div class="metric-value">¥42,850</div>
+          </div>
+          <svg class="sparkline" viewBox="0 0 120 42" preserveAspectRatio="none" aria-hidden="true">
+            <path d="M0 31 Q18 10 36 24 T72 14 T108 31 T120 19" fill="none" stroke="#3d8bfd" stroke-width="3" stroke-linecap="round"/>
+          </svg>
+        </article>
+
+        <article class="card metric-card">
+          <div>
+            <div class="metric-head">
+              <span class="label">活跃用户</span>
+              <span class="chip up">+8% ↑</span>
+            </div>
+            <div class="metric-value">1,284</div>
+          </div>
+          <svg class="sparkline" viewBox="0 0 120 42" preserveAspectRatio="none" aria-hidden="true">
+            <path d="M0 25 Q24 31 48 25 T84 28 T120 9" fill="none" stroke="#18a58a" stroke-width="3" stroke-linecap="round"/>
+          </svg>
+        </article>
+
+        <article class="card metric-card">
+          <div>
+            <div class="metric-head">
+              <span class="label">转化率</span>
+              <span class="chip down">-2% ↓</span>
+            </div>
+            <div class="metric-value">3.42%</div>
+          </div>
+          <svg class="sparkline" viewBox="0 0 120 42" preserveAspectRatio="none" aria-hidden="true">
+            <path d="M0 9 Q24 14 48 33 T84 22 T120 28" fill="none" stroke="#ef5b62" stroke-width="3" stroke-linecap="round"/>
+          </svg>
+        </article>
+
+        <article class="card metric-card">
+          <div>
+            <div class="metric-head">
+              <span class="label">待办事项</span>
+              <span class="chip status">进行中</span>
+            </div>
+            <div class="metric-value">12</div>
+          </div>
+          <svg class="sparkline" viewBox="0 0 120 42" preserveAspectRatio="none" aria-hidden="true">
+            <path d="M0 27 L24 22 L48 29 L72 14 L96 23 L120 10" fill="none" stroke="#64b5ff" stroke-width="3" stroke-linecap="round"/>
+          </svg>
+        </article>
+      </section>
+
+      <div class="content-grid">
+        <section class="card chart-card" aria-label="业务增长趋势">
+          <div class="section-header">
+            <div>
+              <h2 class="section-title">业务增长趋势</h2>
+              <div class="subtle">最近7天</div>
+            </div>
+            <button class="filter-pill" type="button" data-toast="切换时间范围">
+              最近7天
+              <svg class="icon" viewBox="0 0 24 24" fill="none"><path d="m7 9 5 5 5-5H7Z" fill="currentColor"/></svg>
+            </button>
+          </div>
+          <div class="chart-wrap">
+            <svg width="100%" height="100%" viewBox="0 0 760 320" preserveAspectRatio="none" role="img" aria-label="业务增长趋势折线面积图">
+              <defs>
+                <linearGradient id="freshArea" x1="0" x2="0" y1="0" y2="1">
+                  <stop offset="0%" stop-color="#64b5ff" stop-opacity="0.28"/>
+                  <stop offset="55%" stop-color="#2ec4a6" stop-opacity="0.12"/>
+                  <stop offset="100%" stop-color="#2ec4a6" stop-opacity="0"/>
+                </linearGradient>
+              </defs>
+              <g stroke="#d8ebf7" stroke-width="1">
+                <line x1="0" x2="760" y1="42" y2="42"/>
+                <line x1="0" x2="760" y1="104" y2="104"/>
+                <line x1="0" x2="760" y1="166" y2="166"/>
+                <line x1="0" x2="760" y1="228" y2="228"/>
+                <line x1="0" x2="760" y1="290" y2="290"/>
+              </g>
+              <path d="M0 270 C95 232 190 288 285 190 C380 72 475 128 570 96 C665 58 760 22 760 22 L760 320 L0 320 Z" fill="url(#freshArea)"/>
+              <path d="M0 270 C95 232 190 288 285 190 C380 72 475 128 570 96 C665 58 760 22 760 22" fill="none" stroke="#3d8bfd" stroke-width="5" stroke-linecap="round"/>
+              <circle cx="285" cy="190" r="7" fill="#18a58a" stroke="#fff" stroke-width="4"/>
+              <circle cx="760" cy="22" r="7" fill="#3d8bfd" stroke="#fff" stroke-width="4"/>
+            </svg>
+            <div class="axis" aria-hidden="true">
+              <span>周一</span><span>周二</span><span>周三</span><span>周四</span><span>周五</span><span>周六</span><span>周日</span>
+            </div>
+          </div>
+        </section>
+
+        <div class="side-stack">
+          <section class="card summary" aria-label="今日概览">
+            <h2>今日概览</h2>
+            <p>营收和活跃用户继续增长，转化率略有回落。保持节奏，优先处理库存预警与订单审核。</p>
+            <div class="summary-grid">
+              <div class="summary-tile">
+                <strong>+12%</strong>
+                <span>营收增长</span>
+              </div>
+              <div class="summary-tile">
+                <strong>3</strong>
+                <span>实时预警</span>
+              </div>
+            </div>
+          </section>
+
+          <section class="card alert-card" aria-label="实时预警">
+            <div class="section-header">
+              <h2 class="section-title">实时预警</h2>
+              <button class="view-link" type="button" data-toast="查看全部预警">查看全部</button>
+            </div>
+            <div class="alert-list">
+              <article class="alert-item" data-toast="库存预警: 核心组件">
+                <div class="alert-icon error">
+                  <svg class="icon" viewBox="0 0 24 24" fill="none"><path d="M12 3 2.5 20.5h19L12 3Zm1 13h-2v2h2v-2Zm0-7h-2v5h2V9Z" fill="currentColor"/></svg>
+                </div>
+                <div>
+                  <h3 class="alert-title">库存预警: 核心组件</h3>
+                  <p class="alert-desc">SKU-2930 当前库存低于安全水平 (15/100)。</p>
+                </div>
+                <time class="alert-time">10:24</time>
+              </article>
+
+              <article class="alert-item" data-toast="新订单已生成">
+                <div class="alert-icon info">
+                  <svg class="icon" viewBox="0 0 24 24" fill="none"><path d="M11 17h2v-6h-2v6Zm0-8h2V7h-2v2Zm1 13a10 10 0 1 1 0-20 10 10 0 0 1 0 20Z" fill="currentColor"/></svg>
+                </div>
+                <div>
+                  <h3 class="alert-title">新订单已生成</h3>
+                  <p class="alert-desc">来自华东区的批量采购订单已进入待审核队列。</p>
+                </div>
+                <time class="alert-time">09:15</time>
+              </article>
+
+              <article class="alert-item" data-toast="同步任务完成">
+                <div class="alert-icon success">
+                  <svg class="icon" viewBox="0 0 24 24" fill="none"><path d="m10.2 15.2 6.9-6.9 1.4 1.4-8.3 8.3-4.7-4.7 1.4-1.4 3.3 3.3ZM12 22a10 10 0 1 1 0-20 10 10 0 0 1 0 20Z" fill="currentColor"/></svg>
+                </div>
+                <div>
+                  <h3 class="alert-title">同步任务完成</h3>
+                  <p class="alert-desc">昨日财务数据已全量同步至管理后台。</p>
+                </div>
+                <time class="alert-time">08:00</time>
+              </article>
+            </div>
+          </section>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <nav class="bottom-nav" aria-label="移动端底部导航">
+    <a class="active" href="#overview" data-nav="Overview">
+      <svg class="icon" viewBox="0 0 24 24" fill="none"><path d="M5 13h6V5H5v8Zm0 6h6v-4H5v4Zm8 0h6v-7h-6v7Zm0-14v5h6V5h-6Z" fill="currentColor"/></svg>
+      Overview
+    </a>
+    <a href="#analytics" data-nav="Analytics">
+      <svg class="icon" viewBox="0 0 24 24" fill="none"><path d="m4 17 5-5 4 3.5L20 7l-1.5-1.3-5.7 6.8-4-3.5L2.7 15.7 4 17Z" fill="currentColor"/></svg>
+      Analytics
+    </a>
+    <a href="#reports" data-nav="Reports">
+      <svg class="icon" viewBox="0 0 24 24" fill="none"><path d="M6 3h9l4 4v14H6V3Zm8 1.7V8h3.3L14 4.7ZM8.5 12h7v-1.6h-7V12Zm0 4h7v-1.6h-7V16Z" fill="currentColor"/></svg>
+      Reports
+    </a>
+    <a href="#settings" data-nav="Settings">
+      <svg class="icon" viewBox="0 0 24 24" fill="none"><path d="M10.8 3h2.4l.5 2.1c.6.2 1.1.4 1.6.7l1.9-1.1 1.7 1.7-1.1 1.9c.3.5.6 1 .7 1.6l2.1.5v2.4l-2.1.5c-.2.6-.4 1.1-.7 1.6l1.1 1.9-1.7 1.7-1.9-1.1c-.5.3-1 .6-1.6.7l-.5 2.1h-2.4l-.5-2.1c-.6-.2-1.1-.4-1.6-.7l-1.9 1.1-1.7-1.7 1.1-1.9c-.3-.5-.6-1-.7-1.6L3 13.2v-2.4l2.1-.5c.2-.6.4-1.1.7-1.6L4.7 6.8l1.7-1.7 1.9 1.1c.5-.3 1-.6 1.6-.7l.5-2.1Zm1.2 6.1a2.9 2.9 0 1 0 0 5.8 2.9 2.9 0 0 0 0-5.8Z" fill="currentColor"/></svg>
+      Settings
+    </a>
+  </nav>
+
+  <div class="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    const toast = document.querySelector(".toast");
+    let toastTimer;
+
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.add("show");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove("show"), 1500);
+    }
+
+    document.querySelectorAll("[data-toast]").forEach((node) => {
+      node.addEventListener("click", () => showToast(node.dataset.toast));
+    });
+
+    document.querySelectorAll("[data-nav]").forEach((node) => {
+      node.addEventListener("click", (event) => {
+        const name = node.dataset.nav;
+        document.querySelectorAll("[data-nav]").forEach((item) => {
+          item.classList.toggle("active", item.dataset.nav === name);
+        });
+        showToast(`${name} 已选中`);
+        if (node.getAttribute("href") !== "#overview") {
+          event.preventDefault();
+        }
+      });
+    });
+  </script>
+</body>
+</html>

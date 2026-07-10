@@ -1,0 +1,49 @@
+# 浅色主题设计 Token，供 ui/v1.uisl 页面复用。
+meta.name: lightToken
+meta.title: 浅色主题 Token
+meta.type: DesignToken
+meta.description: 由 dashboard.20260710205031.uisl 拆分出的颜色、间距、圆角、阴影和字体 token。
+
+token.colors.primary: #1a73e8
+token.colors.primaryDeep: #005bbf
+token.colors.primarySoft: #d8e7ff
+token.colors.primaryPale: #eef5ff
+token.colors.surface: #ffffff
+token.colors.surfaceSoft: #f8fafc
+token.colors.surfaceBlue: #f3f8ff
+token.colors.pageBackground: #f4f8fd
+token.colors.border: #cbd8ea
+token.colors.textPrimary: #18202b
+token.colors.textSecondary: #4c5b70
+token.colors.textSubtle: #78869a
+token.colors.success: #07883f
+token.colors.successSoft: #dcf7e6
+token.colors.danger: #ba1a1a
+token.colors.dangerSoft: #ffdad6
+
+token.spacing.xs: 4px
+token.spacing.sm: 12px
+token.spacing.md: 16px
+token.spacing.lg: 24px
+token.spacing.xl: 32px
+
+token.radius.sm: 8px
+token.radius.md: 12px
+token.radius.lg: 18px
+token.radius.full: 999px
+
+token.shadow.none: none
+token.shadow.xs: 0 10px 24px rgba(24, 40, 72, 0.08)
+token.shadow.sm: 0 18px 42px rgba(24, 40, 72, 0.12)
+
+token.font.family.base: Inter, Segoe UI, PingFang SC, Microsoft YaHei, Arial, sans-serif
+token.font.size.xs: 12px
+token.font.size.sm: 14px
+token.font.size.md: 16px
+token.font.size.lg: 20px
+token.font.size.xl: 24px
+token.font.weight.regular: 400
+token.font.weight.medium: 600
+token.font.weight.semibold: 700
+token.font.weight.bold: 760
+token.font.lineHeight.normal: 1.45
